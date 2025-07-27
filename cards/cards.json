@@ -1,0 +1,114 @@
+{
+  "cards": [
+    {
+      "front": {
+        "title": "创意设计",
+        "subtitle": "Design",
+        "description": "探索无限创意，打造独特视觉体验",
+        "icon": "paintbrush.fill"
+      },
+      "back": {
+        "title": "详细信息",
+        "description": "独特的设计理念，先进的技术架构，以人为本的设计"
+      }
+    },
+    {
+      "front": {
+        "title": "技术创新",
+        "subtitle": "Innovation",
+        "description": "突破技术边界，引领未来发展方向",
+        "icon": "lightbulb.fill"
+      },
+      "back": {
+        "title": "技术详情",
+        "subtitle": "Tech",
+        "description": "前沿技术应用，创新解决方案，技术驱动发展",
+        "icon": "gear"
+      }
+    },
+    {
+      "front": {
+        "title": "用户体验",
+        "subtitle": "UX",
+        "description": "以人为本，创造流畅自然的交互体验",
+        "icon": "person.fill"
+      },
+      "back": {
+        "title": "体验详情",
+        "subtitle": "Experience",
+        "description": "用户研究，交互设计，可用性测试",
+        "icon": "heart.fill"
+      }
+    },
+    {
+      "front": {
+        "title": "数据分析",
+        "subtitle": "Analytics",
+        "description": "深度挖掘数据价值，驱动智能决策",
+        "icon": "chart.bar.fill"
+      },
+      "back": {
+        "title": "分析详情",
+        "subtitle": "Analysis",
+        "description": "数据挖掘，统计分析，可视化展示",
+        "icon": "chart.line.uptrend.xyaxis"
+      }
+    },
+    {
+      "front": {
+        "title": "团队协作",
+        "subtitle": "Collaboration",
+        "description": "高效协作，共同创造卓越成果",
+        "icon": "person.3.fill"
+      },
+      "back": {
+        "title": "协作详情",
+        "subtitle": "Team",
+        "description": "团队管理，沟通协作，项目管理",
+        "icon": "network"
+      }
+    },
+    {
+      "front": {
+        "title": "测试卡片",
+        "subtitle": null,
+        "description": "这个卡片没有副标题",
+        "icon": "questionmark.circle"
+      },
+      "back": {
+        "title": null,
+        "subtitle": "只有副标题",
+        "description": "这个卡片没有标题",
+        "icon": null
+      }
+    },
+    {
+      "front": {
+        "title": "只有标题",
+        "subtitle": null,
+        "description": "这个卡片只有标题，没有副标题",
+        "icon": "textformat"
+      },
+      "back": {
+        "title": "背面标题",
+        "subtitle": null,
+        "description": "背面也只有标题",
+        "icon": "textformat.alt"
+      }
+    },
+    {
+      "front": {
+        "title": null,
+        "subtitle": "只有副标题",
+        "description": "这个卡片只有副标题，没有标题",
+        "icon": "textformat.subscript"
+      },
+      "back": {
+        "title": "标题",
+        "subtitle": null,
+        "description": "背面也只有副标题",
+        "icon": null
+      }
+    }
+  ]
+} 
