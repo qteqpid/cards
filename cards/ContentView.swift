@@ -224,6 +224,11 @@ struct CardFrontView: View {
             }
             
             Spacer()
+            // 提示文字
+            Text("点击卡片查看汤底")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 0)
         }
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
@@ -280,7 +285,7 @@ struct CardBackView: View {
             }
             
             // 提示文字
-            Text("点击卡片翻回正面")
+            Text("点击卡片翻回汤面")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.bottom, 0)
