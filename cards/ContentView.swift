@@ -138,17 +138,11 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                // 指示器
-                HStack(spacing: 8) {
-                    ForEach(0..<cardManager.cards.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == currentIndex ? AppConfigs.appBackgroundColor : .gray.opacity(0.3))
-                            .frame(width: 8, height: 8)
-                            .scaleEffect(index == currentIndex ? 1.2 : 1.0)
-                            .animation(.spring(response: 0.3), value: currentIndex)
-                    }
-                }
-                .padding(.bottom, 30)
+                // 分页指示器
+                PageIndicatorView(
+                    totalPages: cardManager.cards.count,
+                    currentPage: currentIndex
+                )
             }
             }
         }
@@ -212,13 +206,7 @@ struct CardFrontView: View {
                     .foregroundColor(.primary)
             }
             
-            // 副标题 - 独立显示
-            if let subtitle = cardSide.subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(AppConfigs.appBackgroundColor)
-                    .fontWeight(.medium)
-            }
+
             
             // 描述 - 只在有描述时显示
             if let description = cardSide.description {
@@ -226,7 +214,6 @@ struct CardFrontView: View {
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(3)
             }
         }
         .padding(30)
@@ -269,13 +256,7 @@ struct CardBackView: View {
                     .foregroundColor(.primary)
             }
             
-            // 背面副标题 - 独立显示
-            if let subtitle = cardSide.subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(AppConfigs.appBackgroundColor)
-                    .fontWeight(.medium)
-            }
+
             
             // 背面描述 - 只在有描述时显示
             if let description = cardSide.description {
@@ -283,7 +264,6 @@ struct CardBackView: View {
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(3)
             }
             
             Spacer()

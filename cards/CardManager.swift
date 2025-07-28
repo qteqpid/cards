@@ -27,7 +27,10 @@ class CardManager: ObservableObject {
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
             let cardData = try decoder.decode(CardData.self, from: data)
-            cards = cardData.cards
+            
+            // 随机打乱卡片顺序
+            cards = cardData.cards.shuffled()
+            
             isLoading = false
         } catch {
             errorMessage = "加载卡片数据失败: \(error.localizedDescription)"
