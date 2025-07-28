@@ -185,38 +185,45 @@ struct CardFrontView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // 图标 - 只在有图标时显示
-            if let icon = cardSide.icon {
-                ZStack {
-                    Circle()
-                        .fill(AppConfigs.appBackgroundColor.opacity(0.2))
-                        .frame(width: 80, height: 80)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 30, weight: .medium))
-                        .foregroundColor(AppConfigs.appBackgroundColor)
+            Spacer()
+            
+            // 内容区域
+            VStack(spacing: 20) {
+                // 图标 - 只在有图标时显示
+                if let icon = cardSide.icon {
+                    ZStack {
+                        Circle()
+                            .fill(AppConfigs.appBackgroundColor.opacity(0.2))
+                            .frame(width: 80, height: 80)
+                        
+                        Image(systemName: icon)
+                            .font(.system(size: 30, weight: .medium))
+                            .foregroundColor(AppConfigs.appBackgroundColor)
+                    }
+                }
+                
+                // 标题 - 独立显示
+                if let title = cardSide.title {
+                    Text(title)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                }
+                
+                // 描述 - 只在有描述时显示，支持滚动
+                if let description = cardSide.description {
+                    ScrollView {
+                        Text(description)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 10)
+                    }
+                    .frame(maxHeight: 200) // 限制最大高度
                 }
             }
             
-            // 标题 - 独立显示
-            if let title = cardSide.title {
-                Text(title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-            }
-            
-            // 描述 - 只在有描述时显示，支持滚动
-            if let description = cardSide.description {
-                ScrollView {
-                    Text(description)
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
-                }
-                .frame(maxHeight: .infinity)
-            }
+            Spacer()
         }
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
