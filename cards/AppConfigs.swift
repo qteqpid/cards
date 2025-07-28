@@ -18,13 +18,10 @@ struct AppConfigs {
     static let appBackgroundColor: Color = .blue
     
     
-    /// 卡片高度
-    /// 在450和屏幕高度的4/6之间取大值
-    /// 确保在不同设备上都有合适的显示效果
     static var cardHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
         let fourSixthsHeight = screenHeight * 3/5
-        return max(450, fourSixthsHeight)
+        return fourSixthsHeight
     }
 
     static var cardWidth: CGFloat {
