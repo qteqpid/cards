@@ -206,14 +206,16 @@ struct CardFrontView: View {
                     .foregroundColor(.primary)
             }
             
-
-            
-            // 描述 - 只在有描述时显示
+            // 描述 - 只在有描述时显示，支持滚动
             if let description = cardSide.description {
-                Text(description)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                ScrollView {
+                    Text(description)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 10)
+                }
+                .frame(maxHeight: .infinity)
             }
         }
         .padding(30)
@@ -258,15 +260,17 @@ struct CardBackView: View {
             
 
             
-            // 背面描述 - 只在有描述时显示
+            // 背面描述 - 只在有描述时显示，支持滚动
             if let description = cardSide.description {
-                Text(description)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                ScrollView {
+                    Text(description)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 10)
+                }
+                .frame(maxHeight: .infinity)
             }
-            
-            Spacer()
             
             // 提示文字
             Text("点击卡片翻回正面")
