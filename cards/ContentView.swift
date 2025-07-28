@@ -73,6 +73,24 @@ struct ContentView: View {
             else if !cardManager.cards.isEmpty {
             
             VStack {
+                // 应用标题
+                Text(AppConfigs.appTitle)
+                    .font(.system(size: 42, weight: .black, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [
+                                Color.purple,
+                                Color.blue,
+                                Color.cyan
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
+                    .padding(.top, 20)
+                    .padding(.bottom, 10)
+                
                 Spacer()
                 
                 // 卡片容器
