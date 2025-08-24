@@ -73,7 +73,7 @@ struct PageIndicatorView: View {
                 }
             }
         }
-        .padding(.bottom, 30)
+        .padding(.bottom, 10)
     }
     
     /// 创建单个指示器圆点

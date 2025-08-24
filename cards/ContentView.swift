@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
     @State private var isCardFlipped = false
+    @State private var showSwipeHint = true // 控制滑动提示文字的显示
     
     var body: some View {
         ZStack {
@@ -63,8 +64,7 @@ struct ContentView: View {
             }
             
             // 正常内容
-            else if !cardManager.cards.isEmpty {
-            
+            else if !cardManager.cards.isEmpty {            
             VStack {
                 // 应用标题
                 Text(AppConfigs.appTitle)
@@ -117,10 +117,12 @@ struct ContentView: View {
                                                 // 向右滑动，显示上一张
                                                 currentIndex -= 1
                                                 isCardFlipped = false // 重置翻面状态
+                                                showSwipeHint = false // 切换后隐藏提示文字
                                             } else if value.translation.width < 0 && currentIndex < cardManager.cards.count - 1 {
                                                 // 向左滑动，显示下一张
                                                 currentIndex += 1
                                                 isCardFlipped = false // 重置翻面状态
+                                                showSwipeHint = false // 切换后隐藏提示文字
                                             }
                                         }
                                         dragOffset = 0
@@ -136,6 +138,12 @@ struct ContentView: View {
                     totalPages: cardManager.cards.count,
                     currentPage: currentIndex
                 )
+                
+                // 滑动提示文字 - 根据状态变量条件显示
+                Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.5))
+                    .padding(.bottom, 10)
             }
             }
         }
@@ -210,17 +218,11 @@ struct CardFrontView: View {
                             .font(.title2)
                             .foregroundColor(.primary)
                             .multilineTextAlignment(.leading)
-                            .tracking(1.0)
                             .lineLimit(nil)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .allowsTightening(true)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .layoutPriority(1)
                     .frame(maxHeight: .infinity)
                     .padding(.horizontal, 10)
-                    .frame(maxWidth: .infinity)
                 }
             }
             
@@ -274,22 +276,17 @@ struct CardBackView: View {
                 ScrollView {
                     Text(description)
                         .font(.title2)
+                        .foregroundColor(.primary)
                         .multilineTextAlignment(.leading)
-                        .tracking(1.0)
                         .lineLimit(nil)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .allowsTightening(true)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .layoutPriority(1)
                 .frame(maxHeight: .infinity)
                 .padding(.horizontal, 10)
-                .frame(maxWidth: .infinity)
             }
             
             // 提示文字
-            Text("点击卡片翻回汤面")
+            Text("点击纸张翻回汤面")
                 .font(.caption)
                 .foregroundColor(.primary)
                 .padding(.bottom, 0)
