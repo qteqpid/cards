@@ -47,10 +47,42 @@ struct ContentView: View {
                         return
                     }
                     
-                    // 捕获当前视图的截图
+                    // 捕获当前视图的截图，并添加二维码
                     let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
                     let screenshot = renderer.image { context in
+                        // 先绘制主界面
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+                        
+                        // 加载二维码图片并绘制在右下角
+                        if let qrCodeImage = loadQRCodeImage() {
+                            let qrCodeSize: CGFloat = 60 // 二维码大小
+                            let margin: CGFloat = 40 // 距离边缘的边距
+                            let textHeight: CGFloat = 20 // 文字高度
+
+                            // 绘制二维码图片
+                            let qrCodeRect = CGRect(
+                                x: window.bounds.width - qrCodeSize - margin,
+                                y: window.bounds.height - qrCodeSize - margin,
+                                width: qrCodeSize,
+                                height: qrCodeSize
+                            )
+                            qrCodeImage.draw(in: qrCodeRect)
+
+                            // 在二维码上方绘制文字
+                            let text = "扫描二维码"
+                            let textAttributes: [NSAttributedString.Key: Any] = [
+                                .font: UIFont.systemFont(ofSize: 12),
+                                .foregroundColor: UIColor.white
+                            ]
+                            let textSize = text.size(withAttributes: textAttributes)
+                            let textRect = CGRect(
+                                x: window.bounds.width - textSize.width - margin,
+                                y: qrCodeRect.origin.y - textHeight - 2,
+                                width: textSize.width,
+                                height: textHeight
+                            )
+                            text.draw(in: textRect, withAttributes: textAttributes)
+                        }
                     }
                     
                     // 保存截图到相册
@@ -74,6 +106,17 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    // 加载二维码图片
+    private func loadQRCodeImage() -> UIImage? {
+        // 如果从data目录加载失败，尝试从bundle直接加载
+        if let filePath = Bundle.main.path(forResource: "haigui", ofType: "png") {
+            return UIImage(contentsOfFile: filePath)
+        }
+        
+        print("无法加载二维码图片")
+        return nil
     }
     
     var body: some View {
