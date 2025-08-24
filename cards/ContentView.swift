@@ -53,6 +53,16 @@ struct ContentView: View {
                         // 先绘制主界面
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
                         
+                        // 加载stamp图片并绘制在右下角
+                        if let stampImage = loadStampImage() {
+                            let stampRect = CGRect(
+                                x: window.bounds.width - stampImage.size.width - 60,
+                                y: window.bounds.height - stampImage.size.height - 180,
+                                width: stampImage.size.width,
+                                height: stampImage.size.height
+                            )
+                            stampImage.draw(in: stampRect)
+                        }
                         // 加载二维码图片并绘制在右下角
                         if let qrCodeImage = loadQRCodeImage() {
                             let qrCodeSize: CGFloat = 60 // 二维码大小
@@ -116,6 +126,17 @@ struct ContentView: View {
         }
         
         print("无法加载二维码图片")
+        return nil
+    }
+
+    // 加载二维码图片
+    private func loadStampImage() -> UIImage? {
+        // 如果从data目录加载失败，尝试从bundle直接加载
+        if let filePath = Bundle.main.path(forResource: "stamp", ofType: "png") {
+            return UIImage(contentsOfFile: filePath)
+        }
+        
+        print("无法加载Stamp图片")
         return nil
     }
     
