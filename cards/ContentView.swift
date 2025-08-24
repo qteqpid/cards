@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var isDragging = false
     @State private var showSwipeHint = true // 控制滑动提示文字的显示
     @State private var showShareButton = true // 控制分享按钮的显示
+    @State private var showSaveSuccessAlert = false // 控制保存成功提示框的显示
     
     // 捕获并保存截图到相册的方法
     private func captureAndSaveScreenshot() {
@@ -63,6 +64,7 @@ struct ContentView: View {
                             if success {
                                 // 可以添加成功提示
                                 print("截图已保存到相册")
+                                self.showSaveSuccessAlert = true
                             } else {
                                 // 可以添加失败提示
                                 print("保存截图失败：\(error?.localizedDescription ?? "未知错误")")
@@ -229,6 +231,10 @@ struct ContentView: View {
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.5))
                     .padding(.bottom, 10)
+            }.alert("保存成功", isPresented: $showSaveSuccessAlert) {
+                Button("确定", role: .cancel) {}
+            } message: {
+                Text("题目已保存到相册里，快去分享给好友吧!")
             }
             }
         }
