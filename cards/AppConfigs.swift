@@ -20,7 +20,7 @@ struct AppConfigs {
     
     static var cardHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
-        let fourSixthsHeight = screenHeight * 3/5
+        let fourSixthsHeight = screenHeight * 2/3 // 从3/5增加到2/3，提供更多显示空间
         return fourSixthsHeight
     }
 

@@ -203,17 +203,24 @@ struct CardFrontView: View {
                         .foregroundColor(.primary)
                 }
                 
-                // 描述 - 只在有描述时显示，支持滚动
+                // 描述 - 只在有描述时显示
                 if let description = cardSide.description {
                     ScrollView {
                         Text(description)
                             .font(.title2)
                             .foregroundColor(.primary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 10)
-                            .tracking(1.2)
+                            .multilineTextAlignment(.leading)
+                            .tracking(1.0)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .allowsTightening(true)
+                            .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxHeight: .infinity) // 限制最大高度
+                    .layoutPriority(1)
+                    .frame(maxHeight: .infinity)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity)
                 }
             }
             
@@ -262,17 +269,23 @@ struct CardBackView: View {
             
 
             
-            // 背面描述 - 只在有描述时显示，支持滚动
+            // 背面描述 - 只在有描述时显示
             if let description = cardSide.description {
                 ScrollView {
                     Text(description)
                         .font(.title2)
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
-                        .tracking(1.2)
+                        .multilineTextAlignment(.leading)
+                        .tracking(1.0)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .allowsTightening(true)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .layoutPriority(1)
                 .frame(maxHeight: .infinity)
+                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity)
             }
             
             // 提示文字
