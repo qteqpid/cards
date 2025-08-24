@@ -101,6 +101,7 @@ struct ContentView: View {
                         .offset(x: dragOffset)
                         .rotationEffect(.degrees(dragOffset * 0.1))
                         .scaleEffect(1.0 - abs(dragOffset) * 0.001)
+                        .id(currentIndex) // 添加id确保卡片切换时完全重建视图
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
@@ -150,9 +151,23 @@ struct ContentView: View {
     }
 }
 
+// 环境键定义，用于控制描述文本的显示状态
+private struct IsDescriptionVisibleKey: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    var isDescriptionVisible: Bool {
+        get { self[IsDescriptionVisibleKey.self] }
+        set { self[IsDescriptionVisibleKey.self] = newValue }
+    }
+}
+
 struct FlipCardView: View {
     let card: Card
     @Binding var isFlipped: Bool
+    @State private var showDescription = false // 控制描述文本的显示
+    @State private var animationTimer: Timer? = nil
     
     var body: some View {
         ZStack {
@@ -176,6 +191,27 @@ struct FlipCardView: View {
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.8)) {
                 isFlipped.toggle()
+                resetDescriptionVisibility() // 重置描述文本的显示状态
+            }
+        }
+        .onAppear {
+            resetDescriptionVisibility() // 卡片出现时重置描述文本的显示状态
+        }
+        .environment(\.isDescriptionVisible, showDescription)
+    }
+    
+    // 重置描述文本的显示状态，1秒后显示
+    private func resetDescriptionVisibility() {
+        showDescription = false
+        
+        // 移除之前的计时器
+        animationTimer?.invalidate()
+        
+        // 设置1秒后显示描述文本
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {
+            _ in
+            withAnimation(.easeInOut(duration: 0.8)) {
+                showDescription = true
             }
         }
     }
@@ -183,6 +219,7 @@ struct FlipCardView: View {
 
 struct CardFrontView: View {
     let cardSide: CardSide
+    @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
     
     var body: some View {
         VStack(spacing: 20) {
@@ -219,6 +256,8 @@ struct CardFrontView: View {
                             .foregroundColor(.primary)
                             .multilineTextAlignment(.leading)
                             .lineLimit(nil)
+                            .opacity(isDescriptionVisible ? 1 : 0) // 根据状态控制透明度
+                            .scaleEffect(isDescriptionVisible ? 1 : 0.95) // 根据状态控制缩放
                     }
                     .layoutPriority(1)
                     .frame(maxHeight: .infinity)
@@ -245,6 +284,7 @@ struct CardFrontView: View {
 
 struct CardBackView: View {
     let cardSide: CardSide
+    // 移除环境变量引用，不再使用延迟显示效果
     
     var body: some View {
         VStack(spacing: 20) {
@@ -269,7 +309,7 @@ struct CardBackView: View {
                     .foregroundColor(.primary)
             }
             
-
+            
             
             // 背面描述 - 只在有描述时显示
             if let description = cardSide.description {
