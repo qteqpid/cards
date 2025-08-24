@@ -14,8 +14,8 @@ struct AppConfigs {
     // MARK: - 应用颜色配置
     
     /// 应用主题色
-    /// 当前值：蓝色主题
-    static let appBackgroundColor: Color = .blue
+    /// 当前值：黑色主题
+    static let appBackgroundColor: Color = .black
     
     
     static var cardHeight: CGFloat {
@@ -29,4 +29,4 @@ struct AppConfigs {
         let halfScreenWidth = screenWidth / 2
         return max(screenWidth - 40, halfScreenWidth)
     }
-} 
+}

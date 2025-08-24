@@ -38,7 +38,7 @@ struct PageIndicatorView: View {
         totalPages: Int,
         currentPage: Int,
         maxIndicators: Int = 8,
-        activeColor: Color = AppConfigs.appBackgroundColor,
+        activeColor: Color = .white,
         spacing: CGFloat = 8,
         size: CGFloat = 8,
         activeScale: CGFloat = 1.2
@@ -82,7 +82,7 @@ struct PageIndicatorView: View {
     @ViewBuilder
     private func indicatorCircle(for index: Int) -> some View {
         Circle()
-            .fill(index == currentPage ? activeColor : .gray.opacity(0.3))
+            .fill(index == currentPage ? activeColor : .gray.opacity(0.6))
             .frame(width: size, height: size)
             .scaleEffect(index == currentPage ? activeScale : 1.0)
             .animation(.spring(response: 0.3), value: currentPage)

@@ -16,17 +16,9 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            // 动态渐变背景
-            LinearGradient(
-                colors: [
-                    AppConfigs.appBackgroundColor.opacity(0.3),
-                    AppConfigs.appBackgroundColor.opacity(0.1),
-                    .clear
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // 纯黑色背景
+            Color.black
+                .ignoresSafeArea()
             
             // 加载状态
             if cardManager.isLoading {
@@ -50,21 +42,22 @@ struct ContentView: View {
                     Text("加载失败")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.white)
                     
                     Text(errorMessage)
                         .font(.body)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                     
                     Button("重新加载") {
                         cardManager.reloadCards()
                     }
-                    .foregroundColor(AppConfigs.appBackgroundColor)
+                    .foregroundColor(.white)
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(AppConfigs.appBackgroundColor, lineWidth: 2)
+                            .stroke(.white, lineWidth: 2)
                     )
                 }
             }
@@ -89,7 +82,7 @@ struct ContentView: View {
                     )
                     .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
                     .padding(.top, 20)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 0)
                 
                 Spacer()
                 
@@ -214,12 +207,13 @@ struct CardFrontView: View {
                 if let description = cardSide.description {
                     ScrollView {
                         Text(description)
-                            .font(.body)
-                            .foregroundColor(.secondary)
+                            .font(.title2)
+                            .foregroundColor(.primary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 10)
+                            .tracking(1.2)
                     }
-                    .frame(maxHeight: 200) // 限制最大高度
+                    .frame(maxHeight: .infinity) // 限制最大高度
                 }
             }
             
@@ -227,16 +221,12 @@ struct CardFrontView: View {
             // 提示文字
             Text("点击卡片查看汤底")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
                 .padding(.bottom, 0)
         }
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-        .background(
-            RoundedRectangle(cornerRadius: 25)
-                .fill(.white)
-                .shadow(color: AppConfigs.appBackgroundColor.opacity(0.3), radius: 20, x: 0, y: 10)
-        )
+        .background(CardBackgroundView())
         .overlay(
             RoundedRectangle(cornerRadius: 25)
                 .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
@@ -276,10 +266,11 @@ struct CardBackView: View {
             if let description = cardSide.description {
                 ScrollView {
                     Text(description)
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                        .font(.title2)
+                        .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
+                        .tracking(1.2)
                 }
                 .frame(maxHeight: .infinity)
             }
@@ -287,20 +278,53 @@ struct CardBackView: View {
             // 提示文字
             Text("点击卡片翻回汤面")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
                 .padding(.bottom, 0)
         }
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-        .background(
-            RoundedRectangle(cornerRadius: 25)
-                .fill(.white)
-                .shadow(color: AppConfigs.appBackgroundColor.opacity(0.3), radius: 20, x: 0, y: 10)
-        )
+        .background(CardBackgroundView())
         .overlay(
             RoundedRectangle(cornerRadius: 25)
                 .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
         )
+    }
+}
+
+// 创建共用的卡片背景视图组件
+struct CardBackgroundView: View {
+    var body: some View {
+        ZStack {
+            // 先添加一个黑色背景，让透明的PNG图片能够更好地与应用黑色背景融合
+            Color.black
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+            
+            // 通过Bundle文件路径加载图片
+            if let image = loadImageFromBundle() {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+            } else {
+                // 如果加载失败，显示一个备用的米色背景
+                Color(red: 0.94, green: 0.91, blue: 0.81)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+            }
+            
+            // 添加卡片边框和阴影
+            RoundedRectangle(cornerRadius: 25)
+                .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                .shadow(color: AppConfigs.appBackgroundColor.opacity(0.3), radius: 20, x: 0, y: 10)
+        }
+    }
+    
+    // 从Bundle直接加载图片的辅助方法
+    private func loadImageFromBundle() -> UIImage? {
+        if let filePath = Bundle.main.path(forResource: "paper", ofType: "jpg") {
+            return UIImage(contentsOfFile: filePath)
+        }
+        return nil
     }
 }
 
