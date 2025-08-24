@@ -6,14 +6,73 @@
 //
 
 import SwiftUI
+import UIKit
+import Photos
 
 struct ContentView: View {
     @StateObject private var cardManager = CardManager()
+    @State private var isLoading = true
+    @State private var isCardFlipped = false
     @State private var currentIndex = 0
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
-    @State private var isCardFlipped = false
     @State private var showSwipeHint = true // 控制滑动提示文字的显示
+    @State private var showShareButton = true // 控制分享按钮的显示
+    
+    // 捕获并保存截图到相册的方法
+    private func captureAndSaveScreenshot() {
+        // 检查相册权限
+        PHPhotoLibrary.requestAuthorization { status in
+            guard status == .authorized else {
+                // 如果用户拒绝授权，可以显示提示
+                DispatchQueue.main.async {
+                    // 这里可以添加一个提示，告知用户需要授权才能保存到相册
+                    print("需要相册权限才能保存截图")
+                }
+                return
+            }
+            
+            // 延迟执行，确保UI已经稳定
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // 隐藏分享按钮防止它出现在截图中
+                self.showShareButton = false
+                
+                // 再次延迟，确保按钮已经隐藏
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    // 创建一个视图控制器
+                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                          let window = windowScene.windows.first else {
+                        self.showShareButton = true
+                        return
+                    }
+                    
+                    // 捕获当前视图的截图
+                    let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
+                    let screenshot = renderer.image { context in
+                        window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+                    }
+                    
+                    // 保存截图到相册
+                    PHPhotoLibrary.shared().performChanges {
+                        PHAssetChangeRequest.creationRequestForAsset(from: screenshot)
+                    } completionHandler: { success, error in
+                        DispatchQueue.main.async {
+                            // 恢复分享按钮的显示
+                            self.showShareButton = true
+                            
+                            if success {
+                                // 可以添加成功提示
+                                print("截图已保存到相册")
+                            } else {
+                                // 可以添加失败提示
+                                print("保存截图失败：\(error?.localizedDescription ?? "未知错误")")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -66,23 +125,48 @@ struct ContentView: View {
             // 正常内容
             else if !cardManager.cards.isEmpty {            
             VStack {
-                // 应用标题
-                Text(AppConfigs.appTitle)
-                    .font(.system(size: 42, weight: .black, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Color.purple,
-                                Color.blue,
-                                Color.cyan
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                // 页面顶部：标题和分享按钮
+                ZStack {
+                    // 应用标题（保持居中）
+                    Text(AppConfigs.appTitle)
+                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color.purple,
+                                    Color.blue,
+                                    Color.cyan
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
-                    .padding(.top, 20)
-                    .padding(.bottom, 0)
+                        .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
+                        .padding(.top, 20)
+                        .padding(.bottom, 0)
+                    
+                    // 分享按钮（放在右上角）
+                    HStack {
+                        Spacer()
+                        if showShareButton {
+                            Button(action: {
+                                captureAndSaveScreenshot()
+                            }) {
+                                Circle()
+                                    .fill(Color.white.opacity(0.8))
+                                    .frame(width: 30, height: 30)
+                                    .overlay(
+                                        Image(systemName: "arrowshape.turn.up.right")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(AppConfigs.appBackgroundColor)
+                                    )
+                                    .shadow(radius: 5)
+                            }
+                            .padding(.top, 20)
+                            .padding(.trailing, 20)
+                        }
+                    }
+                }
                 
                 Spacer()
                 
@@ -220,7 +304,9 @@ struct FlipCardView: View {
 struct CardFrontView: View {
     let cardSide: CardSide
     @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
-    
+    @State private var showHeartAnimation = false // 控制爱心动画的显示状态
+    @State private var heartScale: CGFloat = 0 // 控制爱心的缩放比例
+
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -267,7 +353,7 @@ struct CardFrontView: View {
             
             Spacer()
             // 提示文字
-            Text("点击卡片查看汤底")
+            Text("点击纸张查看汤底")
                 .font(.caption)
                 .foregroundColor(.primary)
                 .padding(.bottom, 0)
@@ -279,7 +365,47 @@ struct CardFrontView: View {
             RoundedRectangle(cornerRadius: 25)
                 .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
         )
+        .onTapGesture(count: 2) { // 添加双击手势
+            withAnimation {
+                showHeartAnimation = true
+                
+                // 第一阶段：从0放大到1.2
+                withAnimation(Animation.easeOut(duration: 0.5)) {
+                    heartScale = 1.2
+                }
+                
+                // 第二阶段：从1.2稍微缩小到1.0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(Animation.easeIn(duration: 0.3)) {
+                        heartScale = 1.0
+                    }
+                }
+                
+                // 0.5秒后隐藏爱心
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(Animation.easeOut(duration: 0.3)) {
+                        heartScale = 0
+                        showHeartAnimation = false
+                    }
+                }
+            }
+        }
+        .overlay( // 添加爱心动画覆盖层
+            ZStack {
+                if showHeartAnimation {
+                    Image(systemName: "heart.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
+                        .foregroundColor(Color.red)
+                        .opacity(0.8)
+                        .scaleEffect(heartScale)
+                }
+            }
+        )
     }
+    
+    
 }
 
 struct CardBackView: View {
@@ -304,9 +430,9 @@ struct CardBackView: View {
             // 背面标题 - 独立显示
             if let title = cardSide.title {
                 Text(title)
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.red)
             }
             
             
