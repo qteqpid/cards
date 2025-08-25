@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A11C2EE42E36E04000164FFF /* cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11C2EE42E36E04000164FFF /* turtleSoup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = turtleSoup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11C2EF12E36E04200164FFF /* cardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11C2EFB2E36E04200164FFF /* cardsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cardsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -85,7 +85,7 @@
 		A11C2EE52E36E04000164FFF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A11C2EE42E36E04000164FFF /* cards.app */,
+				A11C2EE42E36E04000164FFF /* turtleSoup.app */,
 				A11C2EF12E36E04200164FFF /* cardsTests.xctest */,
 				A11C2EFB2E36E04200164FFF /* cardsUITests.xctest */,
 			);
@@ -114,7 +114,7 @@
 			packageProductDependencies = (
 			);
 			productName = cards;
-			productReference = A11C2EE42E36E04000164FFF /* cards.app */;
+			productReference = A11C2EE42E36E04000164FFF /* turtleSoup.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A11C2EF02E36E04200164FFF /* cardsTests */ = {
@@ -400,8 +400,7 @@
 				DEVELOPMENT_TEAM = 5N6B48T57B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "经典海龟汤";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_CFBundleDisplayName = "海龟汤来了";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "保存卡片截图到相册，方便您分享题目给朋友";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -411,9 +410,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.cards;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.haigui;
+				PRODUCT_NAME = turtleSoup;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -430,8 +429,7 @@
 				DEVELOPMENT_TEAM = 5N6B48T57B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "经典海龟汤";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_CFBundleDisplayName = "海龟汤来了";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "保存卡片截图到相册，方便您分享题目给朋友";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -441,9 +439,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.cards;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.haigui;
+				PRODUCT_NAME = turtleSoup;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

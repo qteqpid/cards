@@ -26,7 +26,17 @@ struct AppConfigs {
 
     static var cardWidth: CGFloat {
         let screenWidth = UIScreen.main.bounds.width
-        let halfScreenWidth = screenWidth / 2
-        return max(screenWidth - 40, halfScreenWidth)
+        
+        // 判断是否为iPad设备
+        let isiPad = UIDevice.current.userInterfaceIdiom == .pad
+        
+        // 针对不同设备类型设置不同的卡片宽度策略
+        if isiPad {
+            // iPad设备：卡片宽度为屏幕宽度的60%，最小宽度400
+            return min(screenWidth * 0.6, 700) // 限制最大宽度为700
+        } else {
+            // iPhone设备：卡片宽度为屏幕宽度减去40（左右各留20边距），最小宽度300
+            return max(screenWidth - 40, 300)
+        }
     }
 }
