@@ -14,11 +14,13 @@ struct ContentView: View {
     @State private var isLoading = true
     @State private var isCardFlipped = false
     @State private var currentIndex = 0
+    @State private var currentAllIndex = 0
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
     @State private var showSwipeHint = true // 控制滑动提示文字的显示
     @State private var showShareButton = true // 控制分享按钮的显示
     @State private var showSaveSuccessAlert = false // 控制保存成功提示框的显示
+    @State private var showEmptyFavoritesAlert = false // 控制收藏列表为空提示框的显示
     
     // 捕获并保存截图到相册的方法
     private func captureAndSaveScreenshot() {
@@ -189,7 +191,7 @@ struct ContentView: View {
             }
             
             // 正常内容
-            else if !cardManager.cards.isEmpty {            
+            else if !cardManager.displayCards().isEmpty {            
             VStack {
                 // 页面顶部：标题和分享按钮
                 ZStack {
@@ -211,10 +213,49 @@ struct ContentView: View {
                         .padding(.top, 20)
                         .padding(.bottom, 0)
                     
-                    // 分享按钮（放在右上角）
+                    // 顶部按钮组（放在右上角）
                     HStack {
                         Spacer()
                         if showShareButton {
+                            // 收藏/首页切换按钮
+                            Button(action: {
+                                // 切换卡片来源
+                                if cardManager.isFavoriteMode() {
+                                    cardManager.switchCardSource(to: .all)
+                                    // 重置当前卡片索引，确保从之前位置开始显示
+                                    currentIndex = currentAllIndex
+                                    // 重置翻面状态
+                                    isCardFlipped = false
+                                } else {
+                                    // 检查收藏列表是否为空
+                                    if cardManager.favoriteCardIds.isEmpty {
+                                        // 显示提示框
+                                        showEmptyFavoritesAlert = true
+                                    } else {
+                                        cardManager.switchCardSource(to: .favorite)
+                                        // 重置当前卡片索引，确保从第一张开始显示
+                                        currentAllIndex = currentIndex
+                                        currentIndex = 0
+                                        // 重置翻面状态
+                                        isCardFlipped = false
+                                    }
+                                }
+                            }) {
+                                Circle()
+                                    .fill(Color.white.opacity(0.8))
+                                    .frame(width: 30, height: 30)
+                                    .overlay(
+                                        // 根据当前模式显示不同图标
+                                        Image(systemName: cardManager.isFavoriteMode() ? "house" : "heart.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(cardManager.isFavoriteMode() ? AppConfigs.appBackgroundColor : .red)
+                                    )
+                                    .shadow(radius: 5)
+                            }
+                            .padding(.top, 20)
+                            //.padding(.trailing, 10)
+                            
+                            // 分享按钮
                             Button(action: {
                                 captureAndSaveScreenshot()
                             }) {
@@ -239,15 +280,15 @@ struct ContentView: View {
                 // 卡片容器
                 ZStack {
                     // 背景卡片（下一张）- 只在拖拽时显示
-                    if currentIndex < cardManager.cards.count - 1 && abs(dragOffset) > 10 {
-                        FlipCardView(card: cardManager.cards[currentIndex + 1], isFlipped: .constant(false))
+                    if currentIndex < cardManager.displayCards().count - 1 && abs(dragOffset) > 10 {
+                        FlipCardView(card: cardManager.displayCards()[currentIndex + 1], isFlipped: .constant(false))
                             .scaleEffect(0.9)
                             .opacity(0.6)
                             .offset(x: dragOffset * 0.3)
                     }
                     
                     // 当前卡片
-                    FlipCardView(card: cardManager.cards[currentIndex], isFlipped: $isCardFlipped)
+                    FlipCardView(card: cardManager.displayCards()[currentIndex], isFlipped: $isCardFlipped)
                         .offset(x: dragOffset)
                         .rotationEffect(.degrees(dragOffset * 0.1))
                         .scaleEffect(1.0 - abs(dragOffset) * 0.001)
@@ -269,7 +310,7 @@ struct ContentView: View {
                                                 currentIndex -= 1
                                                 isCardFlipped = false // 重置翻面状态
                                                 showSwipeHint = false // 切换后隐藏提示文字
-                                            } else if value.translation.width < 0 && currentIndex < cardManager.cards.count - 1 {
+                                            } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
                                                 // 向左滑动，显示下一张
                                                 currentIndex += 1
                                                 isCardFlipped = false // 重置翻面状态
@@ -286,7 +327,7 @@ struct ContentView: View {
                 
                 // 分页指示器
                 PageIndicatorView(
-                    totalPages: cardManager.cards.count,
+                    totalPages: cardManager.displayCards().count,
                     currentPage: currentIndex
                 )
                 
@@ -298,10 +339,15 @@ struct ContentView: View {
             }.alert("保存成功", isPresented: $showSaveSuccessAlert) {
                 Button("确定", role: .cancel) {}
             } message: {
-                Text("题目已保存到相册里，快去分享给好友吧!")
+                Text("已保存到相册里，快去分享给好友吧!")
+            }
+            .alert("当前收藏为空", isPresented: $showEmptyFavoritesAlert) {
+                Button("确定", role: .cancel) {}
+            } message: {
+                Text("请双击纸张收藏喜欢的海龟汤题目吧!")
             }
             }
-        }
+        } .environmentObject(cardManager)
     }
 }
 
@@ -326,7 +372,7 @@ struct FlipCardView: View {
     var body: some View {
         ZStack {
             // 正面
-            CardFrontView(cardSide: card.front)
+            CardFrontView(cardSide: card.front, cardId: card.id)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 180 : 0),
                     axis: (x: 0, y: 1, z: 0)
@@ -373,73 +419,109 @@ struct FlipCardView: View {
 
 struct CardFrontView: View {
     let cardSide: CardSide
+    let cardId: Int // 卡片ID
     @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
     @State private var showHeartAnimation = false // 控制爱心动画的显示状态
     @State private var heartScale: CGFloat = 0 // 控制爱心的缩放比例
+    @EnvironmentObject private var cardManager: CardManager // 使用环境对象访问CardManager
+    
+    // 加载收藏图片的方法
+    private func loadFavoriteImage() -> UIImage? {
+        // 如果从bundle直接加载图片
+        if let filePath = Bundle.main.path(forResource: "favorite", ofType: "png") {
+            return UIImage(contentsOfFile: filePath)
+        }
+        
+        print("无法加载收藏图片")
+        return nil
+    }
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            
-            // 内容区域
+        ZStack {
             VStack(spacing: 20) {
-                // 图标 - 只在有图标时显示
-                if let icon = cardSide.icon {
-                    ZStack {
-                        Circle()
-                            .fill(AppConfigs.appBackgroundColor.opacity(0.2))
-                            .frame(width: 80, height: 80)
-                        
-                        Image(systemName: icon)
-                            .font(.system(size: 30, weight: .medium))
-                            .foregroundColor(AppConfigs.appBackgroundColor)
+                Spacer()
+                
+                // 内容区域
+                VStack(spacing: 20) {
+                    // 图标 - 只在有图标时显示
+                    if let icon = cardSide.icon {
+                        ZStack {
+                            Circle()
+                                .fill(AppConfigs.appBackgroundColor.opacity(0.2))
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: icon)
+                                .font(.system(size: 30, weight: .medium))
+                                .foregroundColor(AppConfigs.appBackgroundColor)
+                        }
                     }
-                }
-                
-                // 标题 - 独立显示
-                if let title = cardSide.title {
-                    Text(title)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                }
-                
-                // 描述 - 只在有描述时显示
-                if let description = cardSide.description {
-                    ScrollView {
-                        Text(description)
-                            .font(.title2)
+                    
+                    // 标题
+                    if let title = cardSide.title {
+                        Text(title)
+                            .font(.title)
+                            .fontWeight(.bold)
                             .foregroundColor(.primary)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(nil)
-                            .opacity(isDescriptionVisible ? 1 : 0) // 根据状态控制透明度
-                            .scaleEffect(isDescriptionVisible ? 1 : 0.95) // 根据状态控制缩放
                     }
-                    .layoutPriority(1)
-                    .frame(maxHeight: .infinity)
-                    .padding(.horizontal, 10)
+                    
+                    // 描述 - 只在有描述时显示
+                    if let description = cardSide.description {
+                        ScrollView {
+                            Text(description)
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(nil)
+                                .opacity(isDescriptionVisible ? 1 : 0) // 根据状态控制透明度
+                                .scaleEffect(isDescriptionVisible ? 1 : 0.95) // 根据状态控制缩放
+                        }
+                        .layoutPriority(1)
+                        .frame(maxHeight: .infinity)
+                        .padding(.horizontal, 10)
+                    }
+                }
+                
+                Spacer()
+                // 提示文字
+                Text("点击纸张查看汤底")
+                    .font(.caption)
+                    .foregroundColor(.primary)
+                    .padding(.bottom, 0)
+            }
+            .padding(30)
+            .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
+            .background(CardBackgroundView())
+            .overlay(
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
+            )
+            
+            // 在收藏模式下显示浮动的收藏图标，位于卡片左上角
+            if cardManager.isFavoriteMode() {
+                if let favoriteImage = loadFavoriteImage() {
+                    Image(uiImage: favoriteImage)
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .position(x: 60, y: 60)
+                        .opacity(0.5)
+                        .transition(.scale)
                 }
             }
-            
-            Spacer()
-            // 提示文字
-            Text("点击纸张查看汤底")
-                .font(.caption)
-                .foregroundColor(.primary)
-                .padding(.bottom, 0)
         }
-        .padding(30)
-        .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-        .background(CardBackgroundView())
-        .overlay(
-            RoundedRectangle(cornerRadius: 25)
-                .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
-        )
         .onTapGesture(count: 2) { // 添加双击手势
-            withAnimation {
-                showHeartAnimation = true
-                
-                // 第一阶段：从0放大到1.2
+                withAnimation {
+                    showHeartAnimation = true
+                    
+                    // 将卡片ID添加到收藏列表中（如果尚未收藏）
+                    if !cardManager.isFavorite(cardId: cardId) {
+                        cardManager.addToFavorites(cardId: cardId)
+                        print("已收藏卡片 ID: \(cardId)")
+                        print("当前收藏列表: \(cardManager.favoriteCardIds)")
+                    } else {
+                        print("卡片 ID: \(cardId) 已在收藏列表中")
+                    }
+                    
+                    // 第一阶段：从0放大到1.2
                 withAnimation(Animation.easeOut(duration: 0.5)) {
                     heartScale = 1.2
                 }
@@ -605,4 +687,5 @@ struct InfoRow: View {
 
 #Preview {
     ContentView()
+        .environmentObject(CardManager())
 }
