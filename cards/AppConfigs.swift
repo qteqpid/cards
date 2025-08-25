@@ -9,7 +9,7 @@ struct AppConfigs {
     /// 应用标题
     /// 显示在主页顶部的应用名称
     /// 当前值：海龟汤
-    static let appTitle: String = "海龟汤"
+    static let appTitle: String = "海龟汤来了"
     
     // MARK: - 应用颜色配置
     

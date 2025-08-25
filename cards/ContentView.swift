@@ -195,7 +195,7 @@ struct ContentView: View {
             VStack {
                 // 页面顶部：标题和分享按钮
                 ZStack {
-                    // 应用标题（保持居中）
+                    // 应用标题（固定在中间位置）
                     Text(AppConfigs.appTitle)
                         .font(.system(size: 42, weight: .black, design: .rounded))
                         .foregroundStyle(
@@ -213,10 +213,10 @@ struct ContentView: View {
                         .padding(.top, 20)
                         .padding(.bottom, 0)
                     
-                    // 顶部按钮组（放在右上角）
-                    HStack {
-                        Spacer()
-                        if showShareButton {
+                    // 左侧按钮（左上角）
+                    
+                    if showShareButton {
+                        HStack {    
                             // 收藏/首页切换按钮
                             Button(action: {
                                 // 切换卡片来源
@@ -241,20 +241,28 @@ struct ContentView: View {
                                     }
                                 }
                             }) {
-                                Circle()
-                                    .fill(Color.white.opacity(0.8))
-                                    .frame(width: 30, height: 30)
-                                    .overlay(
-                                        // 根据当前模式显示不同图标
-                                        Image(systemName: cardManager.isFavoriteMode() ? "house" : "heart.fill")
-                                            .font(.system(size: 20))
-                                            .foregroundColor(cardManager.isFavoriteMode() ? AppConfigs.appBackgroundColor : .red)
-                                    )
-                                    .shadow(radius: 5)
+                                // 根据当前模式显示不同内容
+                                if cardManager.isFavoriteMode() {
+                                    Text("返回")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(.white)
+                                } else {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.8))
+                                        .frame(width: 30, height: 30)
+                                        .overlay(
+                                            Image(systemName: "heart.fill")
+                                                .font(.system(size: 20))
+                                                .foregroundColor(.red)
+                                        )
+                                        .shadow(radius: 5)
+                                }
                             }
                             .padding(.top, 20)
-                            //.padding(.trailing, 10)
-                            
+                            .padding(.leading, 20)
+                        
+                            Spacer()
+
                             // 分享按钮
                             Button(action: {
                                 captureAndSaveScreenshot()

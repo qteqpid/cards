@@ -68,7 +68,7 @@ struct LaunchView: View {
                     .scaleEffect(1 + sin(animationProgress * 2) * 0.05)
                     
                     // 应用标题
-                    Text("海龟汤")
+                    Text(AppConfigs.appTitle)
                         .font(.system(size: 48, weight: .black, design: .rounded))
                         .foregroundColor(.white)
                         .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
