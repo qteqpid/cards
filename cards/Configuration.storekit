@@ -1,0 +1,55 @@
+{
+  "identifier" : "StoreKitConfiguration",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "8.00",
+      "familyShareable" : false,
+      "internalID" : "premium_upgrade",
+      "localizations" : [
+        {
+          "description" : "解锁永久使用权限",
+          "displayName" : "海龟汤专业版",
+          "locale" : "zh_Hans"
+        }
+      ],
+      "productID" : "com.qteqpid.turtleSoup.premium",
+      "referenceName" : "Premium Upgrade",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "com.qteqpid.haigui",
+    "_developerTeamID" : "5N6B48T57B",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 738864000,
+    "_locale" : "zh_Hans",
+    "_storefront" : "CHN",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
