@@ -18,7 +18,7 @@ struct CardSide: Codable {
 struct Card: Identifiable, Codable {
     // 从JSON加载的整数ID，实现Identifiable协议
     let id: Int
-    
+    let author: String?
     let front: CardSide
     let back: CardSide
 }

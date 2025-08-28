@@ -389,7 +389,7 @@ struct FlipCardView: View {
     var body: some View {
         ZStack {
             // 正面
-            CardFrontView(cardSide: card.front, cardId: card.id)
+            CardFrontView(cardSide: card.front, cardId: card.id, author: card.author)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 180 : 0),
                     axis: (x: 0, y: 1, z: 0)
@@ -443,19 +443,20 @@ struct FlipCardView: View {
 struct CardFrontView: View {
     let cardSide: CardSide
     let cardId: Int // 卡片ID
+    let author: String?
     @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
     @State private var showHeartAnimation = false // 控制爱心动画的显示状态
     @State private var heartScale: CGFloat = 0 // 控制爱心的缩放比例
     @EnvironmentObject private var cardManager: CardManager // 使用环境对象访问CardManager
     
     // 加载收藏图片的方法
-    private func loadFavoriteImage() -> UIImage? {
+    private func loadStampImage(imageName: String, imageType: String) -> UIImage? {
         // 如果从bundle直接加载图片
-        if let filePath = Bundle.main.path(forResource: "favorite", ofType: "png") {
+        if let filePath = Bundle.main.path(forResource: imageName, ofType: imageType) {
             return UIImage(contentsOfFile: filePath)
         }
         
-        print("无法加载收藏图片")
+        print("无法加载stamp图片")
         return nil
     }
 
@@ -481,10 +482,19 @@ struct CardFrontView: View {
                     
                     // 标题
                     if let title = cardSide.title {
-                        Text(title)
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.primary)
+                        VStack {
+                            Text(title)
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            if let author {
+                                Text("by "+author)
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                    .opacity(0.8)
+                            }
+                        }
                     }
                     
                     // 描述 - 只在有描述时显示
@@ -521,12 +531,21 @@ struct CardFrontView: View {
             
             // 在收藏模式下显示浮动的收藏图标，位于卡片左上角
             if cardManager.isFavoriteMode() {
-                if let favoriteImage = loadFavoriteImage() {
+                if let favoriteImage = loadStampImage(imageName: "favorite", imageType: "png") {
                     Image(uiImage: favoriteImage)
                         .resizable()
                         .frame(width: 80, height: 80)
                         .position(x: 60, y: 60)
-                        .opacity(0.5)
+                        .opacity(0.6)
+                        .transition(.scale)
+                }
+            } else {
+                if let author, let originalImage = loadStampImage(imageName: "original", imageType: "png") {
+                    Image(uiImage: originalImage)
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .position(x: 60, y: 60)
+                        .opacity(0.6)
                         .transition(.scale)
                 }
             }
