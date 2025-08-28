@@ -410,7 +410,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.haigui;
 				PRODUCT_NAME = turtleSoup;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -439,7 +439,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qteqpid.haigui;
 				PRODUCT_NAME = turtleSoup;
 				SWIFT_EMIT_LOC_STRINGS = YES;
