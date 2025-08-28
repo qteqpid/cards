@@ -9,6 +9,16 @@ import SwiftUI
 import UIKit
 import Photos
 
+// 加载图片的方法
+private func loadImage(imageName: String, imageType: String) -> UIImage? {
+    // 从bundle直接加载图片
+    if let filePath = Bundle.main.path(forResource: imageName, ofType: imageType) {
+        return UIImage(contentsOfFile: filePath)
+    }
+    print("无法加载图片")
+    return nil
+}
+
 struct ContentView: View {
     @StateObject private var cardManager = CardManager()
     @StateObject private var purchaseManager = InAppPurchaseManager.shared
@@ -58,7 +68,7 @@ struct ContentView: View {
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
                         
                         // 加载stamp图片并绘制在右下角
-                        if let stampImage = loadStampImage() {
+                        if let stampImage = loadImage(imageName: "stamp", imageType: "png") {
                             let stampRect = CGRect(
                                 x: window.bounds.width - stampImage.size.width - 60,
                                 y: window.bounds.height - stampImage.size.height - 180,
@@ -68,7 +78,7 @@ struct ContentView: View {
                             stampImage.draw(in: stampRect)
                         }
                         // 加载二维码图片并绘制在右下角
-                        if let qrCodeImage = loadQRCodeImage() {
+                        if let qrCodeImage = loadImage(imageName: "haigui", imageType: "png") {
                             let qrCodeSize: CGFloat = 60 // 二维码大小
                             let margin: CGFloat = 40 // 距离边缘的边距
                             let textHeight: CGFloat = 20 // 文字高度
@@ -120,28 +130,6 @@ struct ContentView: View {
                 }
             }
         }
-    }
-    
-    // 加载二维码图片
-    private func loadQRCodeImage() -> UIImage? {
-        // 如果从data目录加载失败，尝试从bundle直接加载
-        if let filePath = Bundle.main.path(forResource: "haigui", ofType: "png") {
-            return UIImage(contentsOfFile: filePath)
-        }
-        
-        print("无法加载二维码图片")
-        return nil
-    }
-
-    // 加载二维码图片
-    private func loadStampImage() -> UIImage? {
-        // 如果从data目录加载失败，尝试从bundle直接加载
-        if let filePath = Bundle.main.path(forResource: "stamp", ofType: "png") {
-            return UIImage(contentsOfFile: filePath)
-        }
-        
-        print("无法加载Stamp图片")
-        return nil
     }
     
     var body: some View {
@@ -449,16 +437,7 @@ struct CardFrontView: View {
     @State private var heartScale: CGFloat = 0 // 控制爱心的缩放比例
     @EnvironmentObject private var cardManager: CardManager // 使用环境对象访问CardManager
     
-    // 加载收藏图片的方法
-    private func loadStampImage(imageName: String, imageType: String) -> UIImage? {
-        // 如果从bundle直接加载图片
-        if let filePath = Bundle.main.path(forResource: imageName, ofType: imageType) {
-            return UIImage(contentsOfFile: filePath)
-        }
-        
-        print("无法加载stamp图片")
-        return nil
-    }
+
 
     var body: some View {
         ZStack {
@@ -531,7 +510,7 @@ struct CardFrontView: View {
             
             // 在收藏模式下显示浮动的收藏图标，位于卡片左上角
             if cardManager.isFavoriteMode() {
-                if let favoriteImage = loadStampImage(imageName: "favorite", imageType: "png") {
+                if let favoriteImage = loadImage(imageName: "favorite", imageType: "png") {
                     Image(uiImage: favoriteImage)
                         .resizable()
                         .frame(width: 80, height: 80)
@@ -540,7 +519,7 @@ struct CardFrontView: View {
                         .transition(.scale)
                 }
             } else {
-                if let author, let originalImage = loadStampImage(imageName: "original", imageType: "png") {
+                if let author, let originalImage = loadImage(imageName: "original", imageType: "png") {
                     Image(uiImage: originalImage)
                         .resizable()
                         .frame(width: 80, height: 80)
@@ -670,7 +649,7 @@ struct CardBackgroundView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 25))
             
             // 通过Bundle文件路径加载图片
-            if let image = loadImageFromBundle() {
+            if let image = loadImage(imageName: "paper", imageType: "jpg") {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -687,14 +666,6 @@ struct CardBackgroundView: View {
                 .stroke(Color.black.opacity(0.2), lineWidth: 1)
                 .shadow(color: AppConfigs.appBackgroundColor.opacity(0.3), radius: 20, x: 0, y: 10)
         }
-    }
-    
-    // 从Bundle直接加载图片的辅助方法
-    private func loadImageFromBundle() -> UIImage? {
-        if let filePath = Bundle.main.path(forResource: "paper", ofType: "jpg") {
-            return UIImage(contentsOfFile: filePath)
-        }
-        return nil
     }
 }
 

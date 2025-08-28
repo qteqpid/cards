@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// 卡片侧面数据模型
+// 卡片面数据模型
 struct CardSide: Codable {
     let title: String?
     let description: String?
@@ -18,10 +18,8 @@ struct CardSide: Codable {
 struct Card: Identifiable, Codable {
     // 从JSON加载的整数ID，实现Identifiable协议
     let id: Int
+    // 原创作者
     let author: String?
     let front: CardSide
     let back: CardSide
 }
-
-// 卡片数据已迁移到cards.json文件
-// 使用CardManager来加载数据
