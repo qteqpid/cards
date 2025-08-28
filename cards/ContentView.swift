@@ -319,12 +319,14 @@ struct ContentView: View {
                                                     // 向右滑动，显示上一张
                                                     currentIndex -= 1
                                                     isCardFlipped = false // 重置翻面状态
-                                                    showSwipeHint = false // 切换后隐藏提示文字
                                                 } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
                                                     // 向左滑动，显示下一张
                                                     currentIndex += 1
                                                     isCardFlipped = false // 重置翻面状态
-                                                    showSwipeHint = false // 切换后隐藏提示文字
+                                                    if (currentIndex > 3) {
+                                                        showSwipeHint = false // 切换后隐藏提示文字
+                                                    }
+                                                    
                                                 }
                                             }
                                             dragOffset = 0
@@ -404,15 +406,15 @@ struct FlipCardView: View {
         }
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
         .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.8)) {
-                isFlipped.toggle()
-                resetDescriptionVisibility() // 重置描述文本的显示状态
-                
+            withAnimation(.easeInOut(duration: 0.8)) {                
                 // 点击卡片时检查是否需要显示购买提醒
                 if purchaseManager.shouldShowPurchaseAlert() {
                     showPurchaseView = true
+                } else {
+                    purchaseManager.increaseUseTimes()
+                    isFlipped.toggle()
+                    resetDescriptionVisibility() // 重置描述文本的显示状态
                 }
-                purchaseManager.increaseUseTimes()
             }
         }
         .onAppear {

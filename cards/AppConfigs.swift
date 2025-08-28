@@ -16,7 +16,24 @@ struct AppConfigs {
     /// 应用主题色
     /// 当前值：黑色主题
     static let appBackgroundColor: Color = .black
+
     
+    static var startTitleFontSize: CGFloat {
+        return isIpad ? 36 : 24
+    }
+    
+    static var startFontSize: CGFloat {
+        return startTitleFontSize * 0.75
+    }
+    
+    static var startButtonFontSize: CGFloat {
+        return isIpad ? 36 : 18
+    }
+    
+    
+    static var isIpad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad
+    }
     
     static var cardHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
@@ -27,11 +44,8 @@ struct AppConfigs {
     static var cardWidth: CGFloat {
         let screenWidth = UIScreen.main.bounds.width
         
-        // 判断是否为iPad设备
-        let isiPad = UIDevice.current.userInterfaceIdiom == .pad
-        
         // 针对不同设备类型设置不同的卡片宽度策略
-        if isiPad {
+        if isIpad {
             // iPad设备：卡片宽度为屏幕宽度的60%，最小宽度400
             return min(screenWidth * 0.6, 700) // 限制最大宽度为700
         } else {
