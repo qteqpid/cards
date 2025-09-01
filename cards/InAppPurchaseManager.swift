@@ -62,6 +62,11 @@ class InAppPurchaseManager: ObservableObject {
         }
     }
     
+    // 公共方法：设置会员状态
+    func activatePremium() {
+        setPremiumStatus(true)
+    }
+    
     // 检查是否需要显示购买提示
     func shouldShowPurchaseAlert() -> Bool {
         if isPremium {
@@ -216,4 +221,4 @@ enum StoreError: LocalizedError {
             return "未知错误"
         }
     }
-} 
+}

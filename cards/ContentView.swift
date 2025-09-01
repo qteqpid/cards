@@ -199,6 +199,13 @@ struct ContentView: View {
                                     endPoint: .bottomTrailing
                                 )
                             )
+                            // 后门：长按5秒设置为会员
+                            .gesture(
+                                LongPressGesture(minimumDuration: 5)
+                                    .onEnded { _ in
+                                        purchaseManager.activatePremium()
+                                    }
+                            )
                             .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
                             .padding(.top, 20)
                             .padding(.bottom, 0)
@@ -299,7 +306,7 @@ struct ContentView: View {
                                     }
                                     .onEnded { value in
                                         isDragging = false
-                                        let threshold: CGFloat = 150
+                                        let threshold: CGFloat = 120
                                         
                                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                                             if abs(value.translation.width) > threshold {
@@ -308,12 +315,18 @@ struct ContentView: View {
                                                     currentIndex -= 1
                                                     isCardFlipped = false // 重置翻面状态
                                                 } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
-                                                    // 向左滑动，显示下一张
-                                                    currentIndex += 1
-                                                    isCardFlipped = false // 重置翻面状态
-                                                    if (currentIndex > 3) {
-                                                        showSwipeHint = false // 切换后隐藏提示文字
+                                                    if purchaseManager.shouldShowPurchaseAlert() {
+                                                        showPurchaseView = true
+                                                    } else {
+                                                        purchaseManager.increaseUseTimes()
+                                                        // 向左滑动，显示下一张
+                                                        currentIndex += 1
+                                                        isCardFlipped = false // 重置翻面状态
+                                                        if (currentIndex > 3) {
+                                                            showSwipeHint = false // 切换后隐藏提示文字
+                                                        }
                                                     }
+
                                                     
                                                 }
                                             }
