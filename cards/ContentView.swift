@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 import Photos
+import AVFoundation
 
 // 加载图片的方法
 private func loadImage(imageName: String, imageType: String) -> UIImage? {
@@ -33,6 +34,10 @@ struct ContentView: View {
     @State private var showShareButton = true // 控制分享按钮的显示
     @State private var showSaveSuccessAlert = false // 控制保存成功提示框的显示
     @State private var showEmptyFavoritesAlert = false // 控制收藏列表为空提示框的显示
+    
+    // 音乐播放相关状态
+    // 音乐播放器实例
+    @ObservedObject private var musicPlayer = MusicPlayer.shared
     
     // 捕获并保存截图到相册的方法
     private func captureAndSaveScreenshot() {
@@ -257,6 +262,22 @@ struct ContentView: View {
                                 }
                                 .padding(.top, 20)
                                 .padding(.leading, 20)
+                                
+                                // 音乐播放/暂停按钮
+                                Button(action: {
+                                    musicPlayer.togglePlayback()
+                                }) {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.8))
+                                        .frame(width: 30, height: 30)
+                                        .overlay(
+                                            Image(systemName: musicPlayer.isPlaying ? "music.note" : "music.note.slash")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(AppConfigs.appBackgroundColor)
+                                        )
+                                        .shadow(radius: 5)
+                                }
+                                .padding(.top, 20)
                             
                                 Spacer()
 
