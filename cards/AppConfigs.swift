@@ -10,12 +10,17 @@ struct AppConfigs {
     /// 显示在主页顶部的应用名称
     /// 当前值：海龟汤
     static let appTitle: String = "海龟汤来了"
+    static let appTitleSize: CGFloat = 36
     
     // MARK: - 应用颜色配置
     
     /// 应用主题色
     /// 当前值：黑色主题
     static let appBackgroundColor: Color = .black
+
+    // 顶部按钮大小
+    static let buttonSize: CGFloat = 28
+    static let buttonImageSize: CGFloat = 18
 
     
     static var startTitleFontSize: CGFloat {

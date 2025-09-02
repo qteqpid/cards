@@ -10,6 +10,8 @@ import UIKit
 import Photos
 import AVFoundation
 
+
+
 // 加载图片的方法
 private func loadImage(imageName: String, imageType: String) -> UIImage? {
     // 从bundle直接加载图片
@@ -192,7 +194,7 @@ struct ContentView: View {
                     ZStack {
                         // 应用标题（固定在中间位置）
                         Text(AppConfigs.appTitle)
-                            .font(.system(size: 42, weight: .black, design: .rounded))
+                            .font(.system(size: AppConfigs.appTitleSize, weight: .black, design: .rounded))
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [
@@ -220,77 +222,28 @@ struct ContentView: View {
                         if showShareButton {
                             HStack {
                                 // 收藏/首页切换按钮
-                                Button(action: {
-                                    // 切换卡片来源
-                                    if cardManager.isFavoriteMode() {
-                                        cardManager.switchCardSource(to: .all)
-                                        // 重置当前卡片索引，确保从之前位置开始显示
-                                        currentIndex = currentAllIndex
-                                        // 重置翻面状态
-                                        isCardFlipped = false
-                                    } else {
-                                        // 检查收藏列表是否为空
-                                        if cardManager.favoriteCardIds.isEmpty {
-                                            // 显示提示框
-                                            showEmptyFavoritesAlert = true
-                                        } else {
-                                            cardManager.switchCardSource(to: .favorite)
-                                            // 重置当前卡片索引，确保从第一张开始显示
-                                            currentAllIndex = currentIndex
-                                            currentIndex = 0
-                                            // 重置翻面状态
-                                            isCardFlipped = false
-                                        }
-                                    }
-                                }) {
-                                    // 根据当前模式显示不同内容
-                                    if cardManager.isFavoriteMode() {
-                                        Text("返回")
-                                            .font(.system(size: 18, weight: .bold))
-                                            .foregroundColor(.white)
-                                    } else {
-                                        Circle()
-                                            .fill(Color.white.opacity(0.8))
-                                            .frame(width: 30, height: 30)
-                                            .overlay(
-                                                Image(systemName: "heart.fill")
-                                                    .font(.system(size: 20))
-                                                    .foregroundColor(.red)
-                                            )
-                                            .shadow(radius: 5)
-                                    }
-                                }
-                                .padding(.top, 20)
-                                .padding(.leading, 20)
+                                FavoriteButtonView(
+                                    cardManager: cardManager,
+                                    currentIndex: $currentIndex,
+                                    currentAllIndex: $currentAllIndex,
+                                    isCardFlipped: $isCardFlipped,
+                                    showEmptyFavoritesAlert: $showEmptyFavoritesAlert
+                                )
                                 
-                                // 音乐播放/暂停按钮
-                                Button(action: {
-                                    musicPlayer.togglePlayback()
-                                }) {
-                                    Circle()
-                                        .fill(Color.white.opacity(0.8))
-                                        .frame(width: 30, height: 30)
-                                        .overlay(
-                                            Image(systemName: musicPlayer.isPlaying ? "music.note" : "music.note.slash")
-                                                .font(.system(size: 16))
-                                                .foregroundColor(AppConfigs.appBackgroundColor)
-                                        )
-                                        .shadow(radius: 5)
-                                }
-                                .padding(.top, 20)
-                            
                                 Spacer()
 
+                                // 音乐播放按钮组件
+                                MusicToggleButton(musicPlayer: musicPlayer)
                                 // 分享按钮
                                 Button(action: {
                                     captureAndSaveScreenshot()
                                 }) {
                                     Circle()
                                         .fill(Color.white.opacity(0.8))
-                                        .frame(width: 30, height: 30)
+                                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
                                         .overlay(
                                             Image(systemName: "arrowshape.turn.up.right")
-                                                .font(.system(size: 20))
+                                                .font(.system(size: AppConfigs.buttonImageSize))
                                                 .foregroundColor(AppConfigs.appBackgroundColor)
                                         )
                                         .shadow(radius: 5)
