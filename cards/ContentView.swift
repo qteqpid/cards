@@ -468,7 +468,8 @@ struct CardFrontView: View {
                     if let labels = labels, !labels.isEmpty {
                         LabelsView(labels: labels)
                             .padding(.vertical, -10) // 减小标签和描述之间的间距
-                            .padding(.leading, 14)
+                            .padding(.horizontal, 14)
+                            .opacity(isDescriptionVisible ? 1 : 0) // 根据状态控制透明度
                     }
                     
                     // 描述 - 只在有描述时显示
