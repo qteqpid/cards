@@ -10,7 +10,7 @@ struct AppConfigs {
     /// 显示在主页顶部的应用名称
     /// 当前值：海龟汤
     static let appTitle: String = "海龟汤来了"
-    static let appTitleSize: CGFloat = 36
+    static let appTitleSize: CGFloat = 32
     
     // MARK: - 应用颜色配置
     

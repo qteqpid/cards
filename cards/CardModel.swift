@@ -22,4 +22,6 @@ struct Card: Identifiable, Codable {
     let author: String?
     let front: CardSide
     let back: CardSide
+    // 标签数组，可为空
+    let labels: [String]?
 }

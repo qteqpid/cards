@@ -364,7 +364,7 @@ struct FlipCardView: View {
     var body: some View {
         ZStack {
             // 正面
-            CardFrontView(cardSide: card.front, cardId: card.id, author: card.author)
+            CardFrontView(cardSide: card.front, cardId: card.id, author: card.author, labels: card.labels)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 180 : 0),
                     axis: (x: 0, y: 1, z: 0)
@@ -419,6 +419,7 @@ struct CardFrontView: View {
     let cardSide: CardSide
     let cardId: Int // 卡片ID
     let author: String?
+    let labels: [String]? // 标签数组
     @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
     @State private var showHeartAnimation = false // 控制爱心动画的显示状态
     @State private var heartScale: CGFloat = 0 // 控制爱心的缩放比例
@@ -461,6 +462,13 @@ struct CardFrontView: View {
                                     .opacity(0.8)
                             }
                         }
+                    }
+                    
+                    // 标签 - 只在有标签时显示
+                    if let labels = labels, !labels.isEmpty {
+                        LabelsView(labels: labels)
+                            .padding(.vertical, -10) // 减小标签和描述之间的间距
+                            .padding(.leading, 14)
                     }
                     
                     // 描述 - 只在有描述时显示
