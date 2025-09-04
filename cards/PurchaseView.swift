@@ -20,22 +20,22 @@ struct PurchaseView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.yellow)
                         
-                        Text("海龟汤专业版")
+                        Text("看客们，别划走!")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                         
-                        Text("解锁永久使用权限")
+                        Text("打赏还送两个彩蛋🎭")
                             .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.yellow)
                             .multilineTextAlignment(.center)
                     }
                     
                     // 功能列表
                     VStack(alignment: .leading, spacing: 16) {
-                        FeatureRow(icon: "clock.badge.checkmark", title: "永久使用", description: "不再受试用期使用限制")
-                        FeatureRow(icon: "shield.checkered", title: "所有功能", description: "体验最全最新的功能")
-                        FeatureRow(icon: "arrow.up.circle", title: "感谢打赏", description: "您的支持是我继续努力的动力，谢谢！")
+                        FeatureRow(icon: "clock.badge.checkmark", title: "永久使用 🎟️", description: "不再受试用期使用限制")
+                        FeatureRow(icon: "shield.checkered", title: "解锁功能 🎉", description: "解锁收藏、音乐、AI等所有功能")
+                        FeatureRow(icon: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90", title: "感谢打赏 🎁", description: "您的支持是我坚持做下去的动力，谢谢！")
                     }
                     .padding(.horizontal)
                     

@@ -75,7 +75,7 @@ struct ContentView: View {
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
                         
                         // 加载stamp图片并绘制在右下角
-                        if let stampImage = loadImage(imageName: "stamp", imageType: "png") {
+                        if let stampImage = loadImage(imageName: "stamp_1", imageType: "png") {
                             let stampRect = CGRect(
                                 x: window.bounds.width - stampImage.size.width - 50,
                                 y: window.bounds.height - stampImage.size.height - 170,
