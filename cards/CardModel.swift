@@ -24,4 +24,6 @@ struct Card: Identifiable, Codable {
     let back: CardSide
     // 标签数组，可为空
     let labels: [String]?
+    // 是否是候选的头部汤
+    let isTop: Bool?
 }

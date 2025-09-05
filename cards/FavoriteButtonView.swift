@@ -2,18 +2,16 @@ import SwiftUI
 
 struct FavoriteButtonView: View {
     @ObservedObject var cardManager: CardManager
-    @Binding var currentIndex: Int
-    @Binding var currentAllIndex: Int
+    @ObservedObject var purchaseManager: InAppPurchaseManager
     @Binding var isCardFlipped: Bool
     @Binding var showEmptyFavoritesAlert: Bool
+    @Binding var showPurchaseView: Bool
     
     var body: some View {
         Button(action: {
             // 切换卡片来源
             if cardManager.isFavoriteMode() {
                 cardManager.switchCardSource(to: .all)
-                // 重置当前卡片索引，确保从之前位置开始显示
-                currentIndex = currentAllIndex
                 // 重置翻面状态
                 isCardFlipped = false
             } else {
@@ -22,12 +20,14 @@ struct FavoriteButtonView: View {
                     // 显示提示框
                     showEmptyFavoritesAlert = true
                 } else {
-                    cardManager.switchCardSource(to: .favorite)
-                    // 重置当前卡片索引，确保从第一张开始显示
-                    currentAllIndex = currentIndex
-                    currentIndex = 0
-                    // 重置翻面状态
-                    isCardFlipped = false
+                        // 检查是否需要显示购买弹窗
+                    if purchaseManager.shouldShowPurchaseAlert() {
+                        showPurchaseView = true
+                    } else {
+                        cardManager.switchCardSource(to: .favorite)
+                        // 重置翻面状态
+                        isCardFlipped = false
+                    }
                 }
             }
         }) {

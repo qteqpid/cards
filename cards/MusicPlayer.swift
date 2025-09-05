@@ -32,10 +32,16 @@ struct MusicNoteAnimation: ViewModifier {
 // 音乐播放/暂停按钮视图组件
 struct MusicToggleButton: View {
     @ObservedObject var musicPlayer: MusicPlayer
+    @ObservedObject var purchaseManager: InAppPurchaseManager
+    @Binding var showPurchaseView: Bool
     
     var body: some View {
         Button(action: {
-            musicPlayer.togglePlayback()
+            if purchaseManager.shouldShowPurchaseAlert() {
+                showPurchaseView = true
+            } else {
+                musicPlayer.togglePlayback()
+            }
         }) {
             Circle()
                 .fill(Color.white.opacity(0.8))

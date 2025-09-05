@@ -5,6 +5,7 @@ import SwiftUI
 enum CardSource: String {
     case all = "ALL"
     case favorite = "FAVORITE"
+    case search = "SEARCH"
 }
 
 /// 卡片管理器
@@ -19,6 +20,13 @@ class CardManager: ObservableObject {
     
     // 卡片来源，默认为ALL
     @Published var cardSource: CardSource = .all
+    
+    // 搜索文本
+    @Published var searchText = ""
+
+    @Published var currentIndex = 0
+    /// 当前显示的所有卡片索引
+    @Published var currentAllIndex = 0
     
     // 本地存储的键名
     private let favoritesKey = "favoriteCardIds"
@@ -48,6 +56,17 @@ class CardManager: ObservableObject {
             // 随机打乱卡片顺序
             cards = cardData.cards.shuffled()
             
+            // 提取前10个isTop为true的卡片
+            let topCards = cards.filter { $0.isTop ?? false }.prefix(10)
+            print("topCards count" + String(topCards.count))
+            // 创建一个新的数组，将topCards放在最前面，然后添加剩余的卡片
+            let remainingCards = cards.filter { card in 
+                // 确保不包含已经在topCards中的卡片
+                !topCards.contains { $0.id == card.id }
+            }
+            print("remainingCards count"+String(remainingCards.count))
+            cards = Array(topCards) + remainingCards
+            
             isLoading = false
         } catch {
             errorMessage = "加载卡片数据失败: \(error.localizedDescription)"
@@ -58,6 +77,22 @@ class CardManager: ObservableObject {
     /// 重新加载卡片数据
     func reloadCards() {
         loadCards()
+    }
+
+    func hasNextIndex() -> Bool {
+        return currentIndex < displayCards().count - 1
+    }
+
+    func increaseIndex() {
+        if hasNextIndex() {
+            currentIndex += 1
+        }
+    }
+
+    func decreaseIndex() {
+        if currentIndex > 0 {
+            currentIndex -= 1
+        }
     }
     
     /// 添加卡片到收藏列表
@@ -100,6 +135,18 @@ class CardManager: ObservableObject {
             return cards
         case .favorite:
             return cards.filter { favoriteCardIds.contains($0.id) }
+        case .search:
+            if searchText.isEmpty {
+                return cards
+            } else {
+                let lowercasedSearchText = searchText.lowercased()
+                return cards.filter {
+                    // 搜索卡片的标题、描述
+                    ($0.front.title ?? "").lowercased().contains(lowercasedSearchText) ||
+                    ($0.front.description ?? "").lowercased().contains(lowercasedSearchText) ||
+                    ($0.back.description ?? "").lowercased().contains(lowercasedSearchText)
+                }
+            }
         }
     }
     
@@ -107,11 +154,45 @@ class CardManager: ObservableObject {
     func isFavoriteMode() -> Bool {
         return cardSource == .favorite
     }
+
+    /// 判断是否处于搜索模式
+    func isSearchMode() -> Bool {
+        return cardSource == .search
+    }
+    
+    func isAllMode() -> Bool {
+        return cardSource == .all
+    }
     
     /// 切换卡片来源
     /// - Parameter source: 要切换到的卡片来源
     func switchCardSource(to source: CardSource) {
+        let oldSource = cardSource
         cardSource = source
+        switch((oldSource, source)) {
+            case (.all, .favorite):
+                currentAllIndex = currentIndex
+                currentIndex = 0
+                break
+            case (.all, .search):
+                currentAllIndex = currentIndex
+                currentIndex = 0
+                break
+            case (.search, .all):
+                currentIndex = currentAllIndex
+                break
+            case (.favorite, .all):
+                currentIndex = currentAllIndex
+                break
+            case (.search, .favorite):
+                currentIndex = 0
+                break
+            case (.favorite, .search):
+                currentIndex = 0
+                break
+            default:
+                break
+        }
     }
 }
 

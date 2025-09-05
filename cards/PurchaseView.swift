@@ -7,6 +7,7 @@ struct PurchaseView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showRestoreAlert = false
+    @State private var showSuccessAlert = false
     
     var body: some View {
         NavigationView {
@@ -20,12 +21,12 @@ struct PurchaseView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.yellow)
                         
-                        Text("看客们，别划走!")
+                        Text("汤友，别划走!")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                         
-                        Text("打赏还送两个彩蛋🎭")
+                        Text("打赏送两个彩蛋哦🎭")
                             .font(.subheadline)
                             .foregroundColor(.yellow)
                             .multilineTextAlignment(.center)
@@ -34,7 +35,7 @@ struct PurchaseView: View {
                     // 功能列表
                     VStack(alignment: .leading, spacing: 16) {
                         FeatureRow(icon: "clock.badge.checkmark", title: "永久使用 🎟️", description: "不再受试用期使用限制")
-                        FeatureRow(icon: "shield.checkered", title: "解锁功能 🎉", description: "解锁收藏、音乐、AI等所有功能")
+                        FeatureRow(icon: "shield.checkered", title: "解锁功能 🎉", description: "解锁收藏、音乐、以及AI龟龟等所有功能")
                         FeatureRow(icon: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90", title: "感谢打赏 🎁", description: "您的支持是我坚持做下去的动力，谢谢！")
                     }
                     .padding(.horizontal)
@@ -45,15 +46,16 @@ struct PurchaseView: View {
                     VStack(spacing: 16) {
                             Button(action: {
                                 Task {
-                                    do {
-                                        try await purchaseManager.purchase()
-                                        dismiss()
-                                    } catch {
-                                        errorMessage = error.localizedDescription
-                                        showError = true
-                                    }
-                                }
-                            }) {
+                            do {
+                                try await purchaseManager.purchase()
+                                // 购买成功，显示确认框
+                                showSuccessAlert = true
+                            } catch {
+                                errorMessage = error.localizedDescription
+                                showError = true
+                            }
+                        }
+                    }) {
                                 HStack {
                                     if purchaseManager.isPurchasing {
                                         ProgressView()
@@ -63,7 +65,7 @@ struct PurchaseView: View {
                                         Image(systemName: "crown.fill")
                                             .font(.headline)
                                     }
-                                    Text(purchaseManager.isPurchasing ? "购买中..." : "立即升级")
+                                    Text(purchaseManager.isPurchasing ? "购买中..." : "立即打赏")
                                         .font(.headline)
                                         .fontWeight(.semibold)
                                 }
@@ -117,8 +119,17 @@ struct PurchaseView: View {
                 dismiss()
             }
         } message: {
-            Text(purchaseManager.isPremium ?  "恢复购买成功" : "没有找到已购买的产品")
+            Text(purchaseManager.isPremium ?  "恢复购买成功，你已经是会员啦" : "没有找到购买记录哦")
         }
+        // 购买成功确认框
+        .alert("购买成功", isPresented: $showSuccessAlert) {
+            Button("开始探索") {
+                dismiss()
+            }
+        } message: {
+            Text("第一个彩蛋在页面顶部大标题\"海龟汤来了\"里，快去双击它看看！\n第二个彩蛋在汤里，不知道你遇到它了没? 👻")
+        }
+        
         .onAppear {
             Task {
                 await purchaseManager.loadProducts()
@@ -157,4 +168,4 @@ struct FeatureRow: View {
 
 #Preview {
     PurchaseView(purchaseManager: InAppPurchaseManager.shared)
-} 
+}

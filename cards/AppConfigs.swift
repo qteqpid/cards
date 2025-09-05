@@ -58,4 +58,13 @@ struct AppConfigs {
             return max(screenWidth - 40, 300)
         }
     }
+    
+    static func loadImage(imageName: String, imageType: String) -> UIImage? {
+        // 从bundle直接加载图片
+        if let filePath = Bundle.main.path(forResource: imageName, ofType: imageType) {
+            return UIImage(contentsOfFile: filePath)
+        }
+        print("无法加载图片"+imageName)
+        return nil
+    }
 }
