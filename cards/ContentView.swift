@@ -135,7 +135,7 @@ struct ContentView: View {
                                     )
                             }
                             
-                            Spacer(minLength: 40).border(.red)
+                            Spacer(minLength: 20)
                             
                             // 分页指示器
                             PageIndicatorView(
