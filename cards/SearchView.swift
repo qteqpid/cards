@@ -3,8 +3,9 @@ import SwiftUI
 // 搜索视图组件
 struct SearchView: View {
     @ObservedObject var cardManager: CardManager
-    // 添加状态变量来跟踪拖动偏移量
+    // 添加状态变量来跟踪拖动偏移量和当前位置
     @State private var dragOffset = CGSize.zero
+    @State private var currentPosition = CGSize.zero
     
     var body: some View {
         // 整体容器，包含turtle图片和搜索框，实现一起拖动
@@ -54,18 +55,21 @@ struct SearchView: View {
         }
         .padding(.vertical, 10)
         // 添加拖动功能
-        .offset(dragOffset)
+        .offset(
+            x: currentPosition.width + dragOffset.width,
+            y: currentPosition.height + dragOffset.height
+        )
         .gesture(
             DragGesture()
                 .onChanged { gesture in
-                    // 直接使用手势的translation来实现平滑拖动
+                    // 在拖动过程中，只更新相对于当前位置的偏移量
                     self.dragOffset = gesture.translation
                 }
-                .onEnded { _ in
-                    // 添加动画效果，让搜索框回到原始位置
-                    withAnimation(.spring()) {
-                        self.dragOffset = .zero
-                    }
+                .onEnded { gesture in
+                    // 拖动结束后，更新当前位置并重置拖动偏移量
+                    self.currentPosition.width += gesture.translation.width
+                    self.currentPosition.height += gesture.translation.height
+                    self.dragOffset = .zero
                 }
         )
         .zIndex(1) // 确保搜索框在其他内容之上

@@ -27,176 +27,178 @@ struct ContentView: View {
     @ObservedObject private var musicPlayer = MusicPlayer.shared
     
     var body: some View {
-        ZStack {
-            // 纯黑色背景
-            Color.black
-                .ignoresSafeArea()
-            
-            // 主要内容 - 不会被键盘顶起
-            VStack {
-                // 页面顶部：标题和分享按钮
-                ZStack {
-                    // 应用标题（固定在中间位置）
-                    AppTitleView(purchaseManager: purchaseManager, cardManager: cardManager)
-                    
-                    
-                    // 左侧按钮（左上角）
-                    if showShareButton {
-                        HStack {
-                            // 收藏/首页切换按钮
-                            FavoriteButtonView(
-                                cardManager: cardManager,
-                                purchaseManager: purchaseManager,
-                                isCardFlipped: $isCardFlipped,
-                                showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
-                                showPurchaseView: $showPurchaseView
-                            )
-                            
-                            Spacer()
+        NavigationStack {
+            ZStack {
+                // 纯黑色背景
+                Color.black
+                    .ignoresSafeArea()
+                
+                VStack {
+                    // 导航栏 - 使用ZStack实现标题严格居中
+                    ZStack {
+                        // 标题层 - 严格居中
+                        AppTitleView(purchaseManager: purchaseManager, cardManager: cardManager)
+                        
+                        // 按钮层
+                        if showShareButton {
+                            HStack {
+                                // 收藏/首页切换按钮
+                                FavoriteButtonView(
+                                    cardManager: cardManager,
+                                    purchaseManager: purchaseManager,
+                                    isCardFlipped: $isCardFlipped,
+                                    showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
+                                    showPurchaseView: $showPurchaseView
+                                )
+                                
+                                Spacer()
 
-                            // 音乐播放按钮组件
-                            MusicToggleButton(
-                                musicPlayer: musicPlayer,
-                                purchaseManager: purchaseManager,
-                                showPurchaseView: $showPurchaseView
-                            )
-                            // 分享按钮
-                            Button(action: {
-                                captureAndSaveScreenshot()
-                            }) {
-                                Circle()
-                                    .fill(Color.white.opacity(0.8))
-                                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
-                                    .overlay(
-                                        Image(systemName: "arrowshape.turn.up.right")
-                                            .font(.system(size: AppConfigs.buttonImageSize))
-                                            .foregroundColor(AppConfigs.appBackgroundColor)
-                                    )
-                                    .shadow(radius: 5)
+                                // 音乐播放按钮组件
+                                MusicToggleButton(
+                                    musicPlayer: musicPlayer,
+                                    purchaseManager: purchaseManager,
+                                    showPurchaseView: $showPurchaseView
+                                )
+                                // 分享按钮
+                                Button(action: {
+                                    captureAndSaveScreenshot()
+                                }) {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.8))
+                                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                                        .overlay(
+                                            Image(systemName: "arrowshape.turn.up.right")
+                                                .font(.system(size: AppConfigs.buttonImageSize))
+                                                .foregroundColor(AppConfigs.appBackgroundColor)
+                                        )
+                                        .shadow(radius: 5)
+                                }
+                                .padding(.top, 20)
+                                .padding(.trailing, 20)
                             }
-                            .padding(.top, 20)
-                            .padding(.trailing, 20)
                         }
                     }
-                }
-                
-                Spacer()
-                if !cardManager.displayCards().isEmpty {
-                    // 卡片容器
-                    ZStack {
-                        // 背景卡片（下一张）- 只在拖拽时显示
-                        if cardManager.hasNextIndex() && abs(dragOffset) > 10 {
-                            FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex + 1], isFlipped: .constant(false), purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
-                                .scaleEffect(0.9)
-                                .opacity(0.6)
-                                .offset(x: dragOffset * 0.3)
-                        }
-                        
-                        // 当前卡片
-                        FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex], isFlipped: $isCardFlipped, purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
-                            .offset(x: dragOffset)
-                            .rotationEffect(.degrees(dragOffset * 0.1))
-                            .scaleEffect(1.0 - abs(dragOffset) * 0.001)
-                            .id(cardManager.currentIndex) // 添加id确保卡片切换时完全重建视图
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { value in
-                                        isDragging = true
-                                        dragOffset = value.translation.width
-                                    }
-                                    .onEnded { value in
-                                        isDragging = false
-                                        let threshold: CGFloat = 120
-                                        
-                                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                            if abs(value.translation.width) > threshold {
-                                                if value.translation.width > 0 && cardManager.currentIndex > 0 {
-                                                    // 向右滑动，显示上一张
-                                                    cardManager.decreaseIndex()
-                                                    isCardFlipped = false // 重置翻面状态
-                                                } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
-                                                    if purchaseManager.shouldShowPurchaseAlert() {
-                                                        showPurchaseView = true
-                                                    } else {
-                                                        purchaseManager.increaseUseTimes()
-                                                        // 向左滑动，显示下一张
-                                                        cardManager.increaseIndex()
-                                                        isCardFlipped = false // 重置翻面状态
-                                                        if (cardManager.currentIndex > 3) {
-                                                            showSwipeHint = false // 切换后隐藏提示文字
+                    .padding()
+                    
+                    // 可无限下拉的ScrollView
+                    ScrollView {
+                        if !cardManager.displayCards().isEmpty {
+                            // 卡片容器
+                            ZStack {
+                                // 背景卡片（下一张）- 只在拖拽时显示
+                                if cardManager.hasNextIndex() && abs(dragOffset) > 10 {
+                                    FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex + 1], isFlipped: .constant(false), purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
+                                        .scaleEffect(0.9)
+                                        .opacity(0.6)
+                                        .offset(x: dragOffset * 0.3)
+                                }
+                                
+                                // 当前卡片
+                                FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex], isFlipped: $isCardFlipped, purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
+                                    .offset(x: dragOffset)
+                                    .rotationEffect(.degrees(dragOffset * 0.1))
+                                    .scaleEffect(1.0 - abs(dragOffset) * 0.001)
+                                    .id(cardManager.currentIndex) // 添加id确保卡片切换时完全重建视图
+                                    .gesture(
+                                        DragGesture()
+                                            .onChanged { value in
+                                                isDragging = true
+                                                dragOffset = value.translation.width
+                                            }
+                                            .onEnded { value in
+                                                isDragging = false
+                                                let threshold: CGFloat = 120
+                                                
+                                                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                                                    if abs(value.translation.width) > threshold {
+                                                        if value.translation.width > 0 && cardManager.currentIndex > 0 {
+                                                            // 向右滑动，显示上一张
+                                                            cardManager.decreaseIndex()
+                                                            isCardFlipped = false // 重置翻面状态
+                                                        } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
+                                                            if purchaseManager.shouldShowPurchaseAlert() {
+                                                                showPurchaseView = true
+                                                            } else {
+                                                                purchaseManager.increaseUseTimes()
+                                                                // 向左滑动，显示下一张
+                                                                cardManager.increaseIndex()
+                                                                isCardFlipped = false // 重置翻面状态
+                                                                if (cardManager.currentIndex > 3) {
+                                                                    showSwipeHint = false // 切换后隐藏提示文字
+                                                                }
+                                                            }
                                                         }
                                                     }
+                                                    dragOffset = 0
                                                 }
                                             }
-                                            dragOffset = 0
-                                        }
-                                    }
+                                    )
+                            }
+                            
+                            Spacer(minLength: 40).border(.red)
+                            
+                            // 分页指示器
+                            PageIndicatorView(
+                                totalPages: cardManager.displayCards().count,
+                                currentPage: cardManager.currentIndex
                             )
+                            
+                            // 滑动提示文字 - 根据状态变量条件显示
+                            Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.5))
+                                .padding(.bottom, 10)
+                        } else {
+                            if (cardManager.isFavoriteMode()) {
+                                // 当没有符合条件的卡片时显示提示文字
+                                Text("没有收藏的汤了，快回主页收藏一些吧")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                            } else {
+                                // 当没有符合条件的卡片时显示提示文字
+                                Text("没有找到符合条件的汤")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                            }
+                            
+                            Spacer()
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    // 分页指示器
-                    PageIndicatorView(
-                        totalPages: cardManager.displayCards().count,
-                        currentPage: cardManager.currentIndex
-                    )
-                    
-                    // 滑动提示文字 - 根据状态变量条件显示
-                    Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.5))
-                        .padding(.bottom, 10)
-                } else {
-                    if (cardManager.isFavoriteMode()) {
-                        // 当没有符合条件的卡片时显示提示文字
-                        Text("没有收藏的汤了，快回主页收藏一些吧")
-                            .font(.title3)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    } else {
-                        // 当没有符合条件的卡片时显示提示文字
-                        Text("没有找到符合条件的汤")
-                            .font(.title3)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    }
-                    
-                    Spacer()
                 }
-            }
-            // 搜索视图 - 独立层级，位于屏幕中下位置
-            if cardManager.isSearchMode() && showShareButton {
-                GeometryReader {
-                    geometry in
-                    HStack {
-                        Spacer()
-                        SearchView(cardManager: cardManager)
-                            .padding(.horizontal, 20)
-                            .position(x: geometry.size.width / 2, y: geometry.size.height * 0.7) // 定位到屏幕中下位置
-                        Spacer()
+                // 搜索视图 - 独立层级，位于屏幕中下位置
+                if cardManager.isSearchMode() && showShareButton {
+                    GeometryReader {
+                        geometry in
+                        HStack {
+                            Spacer()
+                            SearchView(cardManager: cardManager)
+                                .padding(.horizontal, 20)
+                                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.7) // 定位到屏幕中下位置
+                            Spacer()
+                        }
                     }
                 }
             }
-            
-        } 
-        // .ignoresSafeArea(.keyboard) // 移除全局的键盘安全区域忽略
-        .environmentObject(cardManager)
-        // 弹窗和页面修饰符
-        .alert("保存成功", isPresented: $showSaveSuccessAlert) { 
-            Button("确定", role: .cancel) {}
-        } message: {
-            Text("已保存到相册里，快去分享给好友吧!")
-        }
-        .alert("当前收藏为空", isPresented: $showEmptyFavoritesAlert) { 
-            Button("确定", role: .cancel) {}
-        } message: {
-            Text("请双击纸张收藏喜欢的海龟汤题目吧!")
-        }
-        .sheet(isPresented: $showPurchaseView) { 
-            PurchaseView(purchaseManager: purchaseManager)
+            // .ignoresSafeArea(.keyboard) // 移除全局的键盘安全区域忽略
+            .environmentObject(cardManager)
+            // 弹窗和页面修饰符
+            .alert("保存成功", isPresented: $showSaveSuccessAlert) {
+                Button("确定", role: .cancel) {}
+            } message: {
+                Text("已保存到相册里，快去分享给好友吧!")
+            }
+            .alert("当前收藏为空", isPresented: $showEmptyFavoritesAlert) {
+                Button("确定", role: .cancel) {}
+            } message: {
+                Text("请双击纸张收藏喜欢的海龟汤题目吧!")
+            }
+            .sheet(isPresented: $showPurchaseView) {
+                PurchaseView(purchaseManager: purchaseManager)
+            }
         }
     }
 
