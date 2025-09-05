@@ -167,17 +167,17 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-            // 搜索视图 - 独立层级，位于顶部固定位置
+            // 搜索视图 - 独立层级，位于屏幕中下位置
             if cardManager.isSearchMode() && showShareButton {
-                VStack {
-                    Spacer()
+                GeometryReader {
+                    geometry in
                     HStack {
                         Spacer()
                         SearchView(cardManager: cardManager)
                             .padding(.horizontal, 20)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height * 0.7) // 定位到屏幕中下位置
                         Spacer()
                     }
-                    Spacer(minLength: 300) // 确保搜索框在合适的位置
                 }
             }
             
