@@ -4,6 +4,7 @@ import StoreKit
 struct PurchaseView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var purchaseManager: InAppPurchaseManager
+    @Binding var showRatingAlert: Bool // 控制是否显示评分邀请弹窗
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showRestoreAlert = false
@@ -99,6 +100,7 @@ struct PurchaseView: View {
                         
                         Button("稍后再说") {
                             dismiss()
+                            showRatingAlert = true
                         }
                         .foregroundColor(.gray)
                         .font(.subheadline)
@@ -125,11 +127,11 @@ struct PurchaseView: View {
         .alert("购买成功", isPresented: $showSuccessAlert) {
             Button("开始探索") {
                 dismiss()
+                showRatingAlert = true
             }
         } message: {
             Text("第一个彩蛋在页面顶部大标题\"海龟汤来了\"里，快去双击它看看！\n第二个彩蛋在汤里，不知道你遇到它了没? 👻")
         }
-        
         .onAppear {
             Task {
                 await purchaseManager.loadProducts()
@@ -164,8 +166,4 @@ struct FeatureRow: View {
         }
         .padding(.vertical, 8)
     }
-}
-
-#Preview {
-    PurchaseView(purchaseManager: InAppPurchaseManager.shared)
 }

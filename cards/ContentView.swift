@@ -9,9 +9,10 @@ import SwiftUI
 import UIKit
 import Photos
 import AVFoundation
-
+import StoreKit
 
 struct ContentView: View {
+    @Environment(\.requestReview) var requestReview
     @StateObject private var cardManager = CardManager()
     @StateObject private var purchaseManager = InAppPurchaseManager.shared
     @State private var showPurchaseView = false
@@ -24,6 +25,7 @@ struct ContentView: View {
     @State private var showShareButton = true // 控制分享按钮的显示
     @State private var showSaveSuccessAlert = false // 控制保存成功提示框的显示
     @State private var showEmptyFavoritesAlert = false // 控制收藏列表为空提示框的显示
+    @State private var showRatingAlert = false // 控制是否显示评分邀请弹窗
     @ObservedObject private var musicPlayer = MusicPlayer.shared
     
     var body: some View {
@@ -41,41 +43,15 @@ struct ContentView: View {
                         
                         // 按钮层
                         if showShareButton {
-                            HStack {
-                                // 收藏/首页切换按钮
-                                FavoriteButtonView(
-                                    cardManager: cardManager,
-                                    purchaseManager: purchaseManager,
-                                    isCardFlipped: $isCardFlipped,
-                                    showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
-                                    showPurchaseView: $showPurchaseView
-                                )
-                                
-                                Spacer()
-
-                                // 音乐播放按钮组件
-                                MusicToggleButton(
-                                    musicPlayer: musicPlayer,
-                                    purchaseManager: purchaseManager,
-                                    showPurchaseView: $showPurchaseView
-                                )
-                                // 分享按钮
-                                Button(action: {
-                                    captureAndSaveScreenshot()
-                                }) {
-                                    Circle()
-                                        .fill(Color.white.opacity(0.8))
-                                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
-                                        .overlay(
-                                            Image(systemName: "arrowshape.turn.up.right")
-                                                .font(.system(size: AppConfigs.buttonImageSize))
-                                                .foregroundColor(AppConfigs.appBackgroundColor)
-                                        )
-                                        .shadow(radius: 5)
-                                }
-                                .padding(.top, 20)
-                                .padding(.trailing, 20)
-                            }
+                            HeadButtonsView(
+                                cardManager: cardManager,
+                                purchaseManager: purchaseManager,
+                                musicPlayer: musicPlayer,
+                                isCardFlipped: $isCardFlipped,
+                                showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
+                                showPurchaseView: $showPurchaseView,
+                                captureAndSaveScreenshot: captureAndSaveScreenshot
+                            )
                         }
                     }
                     .padding()
@@ -83,57 +59,16 @@ struct ContentView: View {
                     // 可无限下拉的ScrollView
                     ScrollView {
                         if !cardManager.displayCards().isEmpty {
-                            // 卡片容器
-                            ZStack {
-                                // 背景卡片（下一张）- 只在拖拽时显示
-                                if cardManager.hasNextIndex() && abs(dragOffset) > 10 {
-                                    FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex + 1], isFlipped: .constant(false), purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
-                                        .scaleEffect(0.9)
-                                        .opacity(0.6)
-                                        .offset(x: dragOffset * 0.3)
-                                }
-                                
-                                // 当前卡片
-                                FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex], isFlipped: $isCardFlipped, purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
-                                    .offset(x: dragOffset)
-                                    .rotationEffect(.degrees(dragOffset * 0.1))
-                                    .scaleEffect(1.0 - abs(dragOffset) * 0.001)
-                                    .id(cardManager.currentIndex) // 添加id确保卡片切换时完全重建视图
-                                    .gesture(
-                                        DragGesture()
-                                            .onChanged { value in
-                                                isDragging = true
-                                                dragOffset = value.translation.width
-                                            }
-                                            .onEnded { value in
-                                                isDragging = false
-                                                let threshold: CGFloat = 120
-                                                
-                                                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                                    if abs(value.translation.width) > threshold {
-                                                        if value.translation.width > 0 && cardManager.currentIndex > 0 {
-                                                            // 向右滑动，显示上一张
-                                                            cardManager.decreaseIndex()
-                                                            isCardFlipped = false // 重置翻面状态
-                                                        } else if value.translation.width < 0 && currentIndex < cardManager.displayCards().count - 1 {
-                                                            if purchaseManager.shouldShowPurchaseAlert() {
-                                                                showPurchaseView = true
-                                                            } else {
-                                                                purchaseManager.increaseUseTimes()
-                                                                // 向左滑动，显示下一张
-                                                                cardManager.increaseIndex()
-                                                                isCardFlipped = false // 重置翻面状态
-                                                                if (cardManager.currentIndex > 3) {
-                                                                    showSwipeHint = false // 切换后隐藏提示文字
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    dragOffset = 0
-                                                }
-                                            }
-                                    )
-                            }
+                            CardView(
+                                cardManager: cardManager,
+                                purchaseManager: purchaseManager,
+                                currentIndex: $currentIndex,
+                                dragOffset: $dragOffset,
+                                isDragging: $isDragging,
+                                isCardFlipped: $isCardFlipped,
+                                showPurchaseView: $showPurchaseView,
+                                showSwipeHint: $showSwipeHint
+                            )
                             
                             Spacer(minLength: 20)
                             
@@ -196,8 +131,18 @@ struct ContentView: View {
             } message: {
                 Text("请双击纸张收藏喜欢的海龟汤题目吧!")
             }
+            .alert("喜欢这个app的设计吗？", isPresented: $showRatingAlert) {
+                Button("不喜欢") {}
+                Button("喜欢") {
+                    requestReview()
+                }
+            } message: {
+                Text("觉得还不错的话帮忙打个分吧~ 😘")
+                    .font(.body)
+                    .foregroundColor(Color.primary)
+            }
             .sheet(isPresented: $showPurchaseView) {
-                PurchaseView(purchaseManager: purchaseManager)
+                PurchaseView(purchaseManager: purchaseManager, showRatingAlert: $showRatingAlert)
             }
         }
     }
@@ -298,6 +243,79 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// 头部按钮视图组件
+struct HeadButtonsView: View {
+    let cardManager: CardManager
+    let purchaseManager: InAppPurchaseManager
+    let musicPlayer: MusicPlayer
+    @Binding var isCardFlipped: Bool
+    @Binding var showEmptyFavoritesAlert: Bool
+    @Binding var showPurchaseView: Bool
+    let captureAndSaveScreenshot: () -> Void
+    
+    var body: some View {
+        HStack {
+            // 收藏/首页切换按钮
+            FavoriteButtonView(
+                cardManager: cardManager,
+                purchaseManager: purchaseManager,
+                isCardFlipped: $isCardFlipped,
+                showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
+                showPurchaseView: $showPurchaseView
+            )
+            
+            Spacer()
+
+            // 音乐播放按钮组件
+            Button(action: {
+                if purchaseManager.shouldShowPurchaseAlert() {
+                    showPurchaseView = true
+                } else {
+                    musicPlayer.togglePlayback()
+                }
+            }) {
+                Circle()
+                    .fill(Color.white.opacity(0.8))
+                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                    .overlay(
+                        Group {
+                            if musicPlayer.isPlaying {
+                                // 播放时的动态效果
+                                Image(systemName: "music.note")
+                                    .font(.system(size: AppConfigs.buttonImageSize))
+                                    .foregroundColor(Color.blue)
+                            } else {
+                                // 暂停时的静态图标
+                                Image(systemName: "music.note")
+                                    .font(.system(size: AppConfigs.buttonImageSize))
+                                    .foregroundColor(Color.black)
+                            }
+                        }
+                    )
+                    .shadow(radius: 5)
+            }
+            .padding(.top, 20)
+            
+            // 分享按钮
+            Button(action: {
+                captureAndSaveScreenshot()
+            }) {
+                Circle()
+                    .fill(Color.white.opacity(0.8))
+                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                    .overlay(
+                        Image(systemName: "arrowshape.turn.up.right")
+                            .font(.system(size: AppConfigs.buttonImageSize))
+                            .foregroundColor(AppConfigs.appBackgroundColor)
+                    )
+                    .shadow(radius: 5)
+            }
+            .padding(.top, 20)
+            .padding(.trailing, 20)
         }
     }
 }
