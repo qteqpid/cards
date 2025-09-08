@@ -147,10 +147,6 @@ struct CardFrontView: View {
             .padding(30)
             .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
             .background(CardBackgroundView())
-            .overlay(
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
-            )
             
             // 在收藏模式下显示浮动的收藏图标，位于卡片左上角
             if cardManager.isFavoriteMode() {
@@ -284,10 +280,6 @@ struct CardBackView: View {
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
         .background(CardBackgroundView())
-        .overlay(
-            RoundedRectangle(cornerRadius: 25)
-                .stroke(AppConfigs.appBackgroundColor.opacity(0.2), lineWidth: 1)
-        )
     }
 }
 
@@ -295,12 +287,8 @@ struct CardBackView: View {
 struct CardBackgroundView: View {
     var body: some View {
         ZStack {
-            // 先添加一个黑色背景，让透明的PNG图片能够更好地与应用黑色背景融合
-            Color.black
-                .clipShape(RoundedRectangle(cornerRadius: 25))
-            
             // 通过Bundle文件路径加载图片
-            if let image = AppConfigs.loadImage(imageName: "paper", imageType: "jpg") {
+            if let image = AppConfigs.loadImage(imageName: "paper", imageType: "png") {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -311,11 +299,6 @@ struct CardBackgroundView: View {
                 Color(red: 0.94, green: 0.91, blue: 0.81)
                     .clipShape(RoundedRectangle(cornerRadius: 25))
             }
-            
-            // 添加卡片边框和阴影
-            RoundedRectangle(cornerRadius: 25)
-                .stroke(Color.black.opacity(0.2), lineWidth: 1)
-                .shadow(color: AppConfigs.appBackgroundColor.opacity(0.3), radius: 20, x: 0, y: 10)
         }
     }
 }
