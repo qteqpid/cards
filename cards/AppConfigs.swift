@@ -4,6 +4,10 @@ import SwiftUI
 /// 用于统一管理应用中的UI尺寸、颜色和文本配置
 struct AppConfigs {
     
+
+    static let heightToCompared: CGFloat = 852.0
+    static let widthToCompared: CGFloat = 480.0
+
     // MARK: - 应用文本配置
     
     /// 应用标题
@@ -39,6 +43,10 @@ struct AppConfigs {
     static var isIpad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad
     }
+
+    static var isIphone: Bool {
+        return UIDevice.current.userInterfaceIdiom == .phone
+    }
     
     static var cardHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
@@ -58,6 +66,23 @@ struct AppConfigs {
             return max(screenWidth - 40, 300)
         }
     }
+
+    static func loadImage(name: String?) -> UIImage? {
+        guard let name = name else {
+            print("图片名称为空")
+            return nil
+        }
+        // 解析文件名和扩展名
+        let components = name.split(separator: ".")
+        if components.count != 2 {
+            print("无效的图片名称格式: \(name)")
+            return nil
+        }
+
+        let imageName = String(components[0])
+        let imageType = String(components[1])
+        return loadImage(imageName: imageName, imageType: imageType)
+    }
     
     static func loadImage(imageName: String, imageType: String) -> UIImage? {
         // 从bundle直接加载图片
@@ -66,5 +91,32 @@ struct AppConfigs {
         }
         print("无法加载图片"+imageName)
         return nil
+    }
+
+    static var currentBgMap: BgMap {
+        // iphone 16 屏幕中心啊点 196, 426
+        return BgMap(bgImage: "app_bg1.png", touchpoints: [
+            TouchPoint(
+                image: "paper_ro_right.png", 
+                positionX: 87,
+                positionY: 154,
+                frameWidth: 200, 
+                frameHeight: 200, 
+                action: .displayCards),
+            TouchPoint(
+                image: "radio.png", 
+                positionX: -76, 
+                positionY: -41, 
+                frameWidth: 100, 
+                frameHeight: 100, 
+                action: .toggleMusic),
+            TouchPoint( 
+                image: "turtle.png", 
+                positionX: -100,
+                positionY: -136,
+                frameWidth: 50, 
+                frameHeight: 50, 
+                action: .triggerTurtle)
+        ])
     }
 }
