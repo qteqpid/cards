@@ -10,6 +10,7 @@ import SwiftUI
 struct TouchPointsLayerView: View {
     @ObservedObject var cardManager: CardManager
     @ObservedObject var musicPlayer: MusicPlayer
+    @Binding var showScrollView: Bool
     
     // 存储每个touchpoint的临时位置
     @State private var dragPositions: [String: CGPoint] = [:]
@@ -79,8 +80,7 @@ struct TouchPointsLayerView: View {
                     if let action = touchpoint.action {
                         switch action {
                         case .displayCards:
-                            //cardManager.switchFavoriteMode()
-                            self.musicPlayer.togglePlayback()
+                            showScrollView = true
                         case .toggleMusic:
                             self.musicPlayer.togglePlayback()
                         case .triggerTurtle:

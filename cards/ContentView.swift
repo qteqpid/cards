@@ -61,11 +61,9 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                //if AppConfigs.isIphone {
-                    // touchpoints层
-                    TouchPointsLayerView(cardManager: cardManager, musicPlayer: musicPlayer)
-                //}
-               
+                // touchpoints层
+                TouchPointsLayerView(cardManager: cardManager, musicPlayer: musicPlayer, showScrollView: $showScrollView)
+            
                 VStack {
                     // 导航栏 - 使用ZStack实现标题严格居中
                     ZStack {
@@ -88,74 +86,74 @@ struct ContentView: View {
                     .padding()
                     Spacer()
  
-                        ZStack {
-                            ScrollView {
-                                if !cardManager.displayCards().isEmpty {
-                                    CardView(
-                                        cardManager: cardManager,
-                                        purchaseManager: purchaseManager,
-                                        currentIndex: $currentIndex,
-                                        dragOffset: $dragOffset,
-                                        isDragging: $isDragging,
-                                        isCardFlipped: $isCardFlipped,
-                                        showPurchaseView: $showPurchaseView,
-                                        showSwipeHint: $showSwipeHint
-                                    )
-                                    
-                                    Spacer(minLength: 20)
-                                    
-                                    // 分页指示器
-                                    PageIndicatorView(
-                                        totalPages: cardManager.displayCards().count,
-                                        currentPage: cardManager.currentIndex
-                                    )
-                                    
-                                    // 滑动提示文字 - 根据状态变量条件显示
-                                    Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.5))
-                                        .padding(.bottom, 10)
-                                } else {
-                                    if (cardManager.isFavoriteMode()) {
-                                        // 当没有符合条件的卡片时显示提示文字
-                                        Text("没有收藏的汤了，快回主页收藏一些吧")
-                                            .font(.title3)
-                                            .foregroundColor(.white)
-                                            .multilineTextAlignment(.center)
-                                            .padding()
-                                    } else {
-                                        // 当没有符合条件的卡片时显示提示文字
-                                        Text("没有找到符合条件的汤")
-                                            .font(.title3)
-                                            .foregroundColor(.white)
-                                            .multilineTextAlignment(.center)
-                                            .padding()
-                                    }
-                                    
-                                    Spacer()
-                                }
-                            }
-                            
-                            // 右上角scroll图标按钮
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    showScrollView = false
-                                }) {
-                                    Image(systemName: "scroll")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 24, height: 24)
+                    ZStack {
+                        ScrollView {
+                            if !cardManager.displayCards().isEmpty {
+                                CardView(
+                                    cardManager: cardManager,
+                                    purchaseManager: purchaseManager,
+                                    currentIndex: $currentIndex,
+                                    dragOffset: $dragOffset,
+                                    isDragging: $isDragging,
+                                    isCardFlipped: $isCardFlipped,
+                                    showPurchaseView: $showPurchaseView,
+                                    showSwipeHint: $showSwipeHint
+                                )
+                                
+                                Spacer(minLength: 20)
+                                
+                                // 分页指示器
+                                PageIndicatorView(
+                                    totalPages: cardManager.displayCards().count,
+                                    currentPage: cardManager.currentIndex
+                                )
+                                
+                                // 滑动提示文字 - 根据状态变量条件显示
+                                Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.5))
+                                    .padding(.bottom, 10)
+                            } else {
+                                if (cardManager.isFavoriteMode()) {
+                                    // 当没有符合条件的卡片时显示提示文字
+                                    Text("没有收藏的汤了，快回主页收藏一些吧")
+                                        .font(.title3)
                                         .foregroundColor(.white)
-                                        .background(Color.black.opacity(0.5))
-                                        .cornerRadius(12)
-                                        .padding(4)
+                                        .multilineTextAlignment(.center)
+                                        .padding()
+                                } else {
+                                    // 当没有符合条件的卡片时显示提示文字
+                                    Text("没有找到符合条件的汤")
+                                        .font(.title3)
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .padding()
                                 }
-                                .padding(.top, 8)
-                                .padding(.trailing, 8)
+                                
+                                Spacer()
                             }
                         }
-                        Spacer()
+                        
+                        // 右上角scroll图标按钮
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showScrollView = false
+                            }) {
+                                Image(systemName: "scroll")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(.white)
+                                    .background(Color.black.opacity(0.5))
+                                    .cornerRadius(12)
+                                    .padding(4)
+                            }
+                            .padding(.top, 8)
+                            .padding(.trailing, 8)
+                        }
+                    }
+                    Spacer()
                     
                 }.opacity(showScrollView ? 1 : 0)
                 // 搜索视图 - 独立层级，位于屏幕中下位置
