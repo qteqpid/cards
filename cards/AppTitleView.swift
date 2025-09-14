@@ -40,7 +40,5 @@ struct AppTitleView: View {
                 }
             }
             .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 6)
-            .padding(.top, 20)
-            .padding(.bottom, 0)
     }
 }

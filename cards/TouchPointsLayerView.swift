@@ -17,24 +17,24 @@ struct TouchPointsLayerView: View {
     
     var body: some View {
         ZStack {
-            
             // 展示AppConfigs.currentBgMap里的touchpoints数据
             if let touchpoints = AppConfigs.currentBgMap.touchpoints {
                 ForEach(touchpoints, id: \.image) {
                     touchpoint in
-                    
-                    if let touchImage = AppConfigs.loadImage(name: touchpoint.image) {
-                        // 计算实际位置和尺寸
-                        self.createTouchPointView(
-                            touchpoint: touchpoint,
-                            touchImage: touchImage
-                        )
+               
+                    if (shouldShow(touchpoint: touchpoint)) {
+                        if let touchImage = AppConfigs.loadImage(name: touchpoint.image) {
+                            // 计算实际位置和尺寸
+                            self.createTouchPointView(
+                                touchpoint: touchpoint,
+                                touchImage: touchImage
+                            )
+                        }
                     }
                 }
             }
         }
         
-        .border(.red)
         .ignoresSafeArea()
     }
     
@@ -61,7 +61,6 @@ struct TouchPointsLayerView: View {
                 .scaledToFit()
                 .frame(width: actualWidth, height: actualHeight)
                 .position(actualPosition)
-                .border(.yellow)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
@@ -145,5 +144,14 @@ struct TouchPointsLayerView: View {
             scaledHeight,
             dragStartPosition
         )
+    }
+
+    private func shouldShow (
+        touchpoint: TouchPoint
+    ) -> Bool {
+        if (touchpoint.name == TouchPointName.music && !musicPlayer.isPlaying) {
+            return false
+        }
+        return true
     }
 }

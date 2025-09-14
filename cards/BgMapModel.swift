@@ -1,6 +1,11 @@
 import SwiftUI
 
-
+enum TouchPointName {
+    case radio
+    case turtle
+    case paper
+    case music
+}
 enum TouchAction {
     case displayCards
     case toggleMusic
@@ -8,6 +13,7 @@ enum TouchAction {
 }
 
 struct TouchPoint {
+    let name: TouchPointName
     let image: String
     let positionX: CGFloat
     let positionY: CGFloat

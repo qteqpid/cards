@@ -37,18 +37,15 @@ struct FavoriteButtonView: View {
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
             } else {
-                Circle()
-                    .fill(Color.white.opacity(0.8))
-                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
-                    .overlay(
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: AppConfigs.buttonImageSize))
-                            .foregroundColor(.red)
-                    )
-                    .shadow(radius: 5)
+                if let mapIcon = AppConfigs.loadImage(name: "heart_icon.png") {
+                    Image(uiImage: mapIcon)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                        .shadow(radius: 5)
+                }
             }
         }
-        .padding(.top, 20)
         .padding(.leading, 20)
     }
 }

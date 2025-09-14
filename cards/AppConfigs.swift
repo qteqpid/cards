@@ -97,25 +97,36 @@ struct AppConfigs {
         // iphone 16 屏幕中心啊点 196, 426
         return BgMap(bgImage: "app_bg1.png", touchpoints: [
             TouchPoint(
-                image: "paper_ro_right.png", 
+                name: TouchPointName.paper,
+                image: "paper_ro_right.png",
                 positionX: 87,
                 positionY: 154,
-                frameWidth: 200, 
-                frameHeight: 200, 
+                frameWidth: 100,
+                frameHeight: 100,
                 action: .displayCards),
             TouchPoint(
+                name: TouchPointName.radio,
                 image: "radio.png", 
                 positionX: -76, 
                 positionY: -41, 
                 frameWidth: 100, 
                 frameHeight: 100, 
                 action: .toggleMusic),
+            TouchPoint(
+                name: TouchPointName.music,
+                image: "music_symbol.png", 
+                positionX: -4,
+                positionY: -87,
+                frameWidth: 90,
+                frameHeight: 90, 
+                action: nil),
             TouchPoint( 
+                name: TouchPointName.turtle,
                 image: "turtle.png", 
                 positionX: -100,
                 positionY: -136,
-                frameWidth: 50, 
-                frameHeight: 50, 
+                frameWidth: 50,
+                frameHeight: 50,
                 action: .triggerTurtle)
         ])
     }

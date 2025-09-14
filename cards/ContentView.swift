@@ -79,80 +79,63 @@ struct ContentView: View {
                                 isCardFlipped: $isCardFlipped,
                                 showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
                                 showPurchaseView: $showPurchaseView,
+                                showScrollView: $showScrollView,
                                 captureAndSaveScreenshot: captureAndSaveScreenshot
                             )
                         }
                     }
                     .padding()
+
                     Spacer()
- 
-                    ZStack {
-                        ScrollView {
-                            if !cardManager.displayCards().isEmpty {
-                                CardView(
-                                    cardManager: cardManager,
-                                    purchaseManager: purchaseManager,
-                                    currentIndex: $currentIndex,
-                                    dragOffset: $dragOffset,
-                                    isDragging: $isDragging,
-                                    isCardFlipped: $isCardFlipped,
-                                    showPurchaseView: $showPurchaseView,
-                                    showSwipeHint: $showSwipeHint
-                                )
-                                
-                                Spacer(minLength: 20)
-                                
-                                // 分页指示器
-                                PageIndicatorView(
-                                    totalPages: cardManager.displayCards().count,
-                                    currentPage: cardManager.currentIndex
-                                )
-                                
-                                // 滑动提示文字 - 根据状态变量条件显示
-                                Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.5))
-                                    .padding(.bottom, 10)
-                            } else {
-                                if (cardManager.isFavoriteMode()) {
-                                    // 当没有符合条件的卡片时显示提示文字
-                                    Text("没有收藏的汤了，快回主页收藏一些吧")
-                                        .font(.title3)
-                                        .foregroundColor(.white)
-                                        .multilineTextAlignment(.center)
-                                        .padding()
-                                } else {
-                                    // 当没有符合条件的卡片时显示提示文字
-                                    Text("没有找到符合条件的汤")
-                                        .font(.title3)
-                                        .foregroundColor(.white)
-                                        .multilineTextAlignment(.center)
-                                        .padding()
-                                }
-                                
-                                Spacer()
-                            }
-                        }
-                        
-                        // 右上角scroll图标按钮
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showScrollView = false
-                            }) {
-                                Image(systemName: "scroll")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
+                    
+                    ScrollView {
+                        if !cardManager.displayCards().isEmpty {
+                            CardView(
+                                cardManager: cardManager,
+                                purchaseManager: purchaseManager,
+                                currentIndex: $currentIndex,
+                                dragOffset: $dragOffset,
+                                isDragging: $isDragging,
+                                isCardFlipped: $isCardFlipped,
+                                showPurchaseView: $showPurchaseView,
+                                showSwipeHint: $showSwipeHint
+                            )
+                            
+                            Spacer(minLength: 20)
+                            
+                            // 分页指示器
+                            PageIndicatorView(
+                                totalPages: cardManager.displayCards().count,
+                                currentPage: cardManager.currentIndex
+                            )
+                            
+                            // 滑动提示文字 - 根据状态变量条件显示
+                            Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.5))
+                                .padding(.bottom, 10)
+                        } else {
+                            if (cardManager.isFavoriteMode()) {
+                                // 当没有符合条件的卡片时显示提示文字
+                                Text("没有收藏的汤了，快回主页收藏一些吧")
+                                    .font(.title3)
                                     .foregroundColor(.white)
-                                    .background(Color.black.opacity(0.5))
-                                    .cornerRadius(12)
-                                    .padding(4)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                            } else {
+                                // 当没有符合条件的卡片时显示提示文字
+                                Text("没有找到符合条件的汤")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
                             }
-                            .padding(.top, 8)
-                            .padding(.trailing, 8)
+                            
+                            Spacer()
                         }
                     }
+                        
+                    
                     Spacer()
                     
                 }.opacity(showScrollView ? 1 : 0)
@@ -313,6 +296,7 @@ struct HeadButtonsView: View {
     @Binding var isCardFlipped: Bool
     @Binding var showEmptyFavoritesAlert: Bool
     @Binding var showPurchaseView: Bool
+    @Binding var showScrollView: Bool
     let captureAndSaveScreenshot: () -> Void
     
     var body: some View {
@@ -333,46 +317,29 @@ struct HeadButtonsView: View {
                 if purchaseManager.shouldShowPurchaseAlert() {
                     showPurchaseView = true
                 } else {
-                    musicPlayer.togglePlayback()
+                    showScrollView = false
                 }
             }) {
-                Circle()
-                    .fill(Color.white.opacity(0.8))
-                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
-                    .overlay(
-                        Group {
-                            if musicPlayer.isPlaying {
-                                // 播放时的动态效果
-                                Image(systemName: "music.note")
-                                    .font(.system(size: AppConfigs.buttonImageSize))
-                                    .foregroundColor(Color.blue)
-                            } else {
-                                // 暂停时的静态图标
-                                Image(systemName: "music.note")
-                                    .font(.system(size: AppConfigs.buttonImageSize))
-                                    .foregroundColor(Color.black)
-                            }
-                        }
-                    )
-                    .shadow(radius: 5)
+                
+                if let mapIcon = AppConfigs.loadImage(name: "map_icon.png") {
+                    Image(uiImage: mapIcon)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                }
             }
-            .padding(.top, 20)
             
             // 分享按钮
             Button(action: {
                 captureAndSaveScreenshot()
             }) {
-                Circle()
-                    .fill(Color.white.opacity(0.8))
-                    .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
-                    .overlay(
-                        Image(systemName: "arrowshape.turn.up.right")
-                            .font(.system(size: AppConfigs.buttonImageSize))
-                            .foregroundColor(AppConfigs.appBackgroundColor)
-                    )
-                    .shadow(radius: 5)
+                if let mapIcon = AppConfigs.loadImage(name: "share_icon.png") {
+                    Image(uiImage: mapIcon)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)
+                }
             }
-            .padding(.top, 20)
             .padding(.trailing, 20)
         }
     }
