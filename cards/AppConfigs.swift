@@ -127,7 +127,23 @@ struct AppConfigs {
                 positionY: -136,
                 frameWidth: 50,
                 frameHeight: 50,
-                action: .triggerTurtle)
+                action: .triggerTurtle),
+            TouchPoint(
+                name: TouchPointName.calendar,
+                image: "calendar_icon.png",
+                positionX: 160,
+                positionY: -275,
+                frameWidth: 100,
+                frameHeight: 100,
+                action: nil),
+            TouchPoint(
+                name: TouchPointName.calendar,
+                image: "magnifier_icon.png",
+                positionX: 177,
+                positionY: 226,
+                frameWidth: 80,
+                frameHeight: 80,
+                action: nil)
         ])
     }
 }

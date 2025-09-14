@@ -5,6 +5,7 @@ enum TouchPointName {
     case turtle
     case paper
     case music
+    case calendar
 }
 enum TouchAction {
     case displayCards

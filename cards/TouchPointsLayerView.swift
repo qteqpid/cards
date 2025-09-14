@@ -60,6 +60,8 @@ struct TouchPointsLayerView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: actualWidth, height: actualHeight)
+                // 为music_symbol.png图片添加一圈白光效果
+                .shadow(color: touchpoint.name == TouchPointName.music ? .white : .clear, radius: 10, x: 0, y: 0)
                 .position(actualPosition)
                 .gesture(
                     DragGesture()
@@ -91,16 +93,19 @@ struct TouchPointsLayerView: View {
                     }
                 }
             
-            // 在图片下方显示坐标值
-            Text(String(format: "X: %.1f, Y: %.1f", (actualPosition.x - screenWidth/2), (actualPosition.y - screenHeight/2)))
-                .foregroundColor(.black)
-                .background(Color.white.opacity(0.8))
-                .padding(4)
-                .font(.caption)
-                .position(
-                    x: actualPosition.x,
-                    y: actualPosition.y + 20
-                )
+            if dragPositions[touchpoint.image] != nil {
+                // 在图片下方显示坐标值
+                Text(String(format: "X: %.1f, Y: %.1f", (actualPosition.x - screenWidth/2), (actualPosition.y - screenHeight/2)))
+                    .foregroundColor(.black)
+                    .background(Color.white.opacity(0.8))
+                    .padding(4)
+                    .font(.caption)
+                    .position(
+                        x: actualPosition.x,
+                        y: actualPosition.y - 40
+                    )
+            }
+
         }
     }
     
