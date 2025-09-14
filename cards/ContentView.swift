@@ -47,7 +47,7 @@ struct ContentView: View {
     @State private var showPurchaseView = false
     @State private var isLoading = true
     @State private var isCardFlipped = false
-    @State private var currentIndex = 0
+    // 移除本地currentIndex状态变量，直接使用cardManager.currentIndex
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
     @State private var showSwipeHint = true // 控制滑动提示文字的显示
@@ -88,18 +88,18 @@ struct ContentView: View {
 
                     Spacer()
                     
+                    ZStack {
                     ScrollView {
                         if !cardManager.displayCards().isEmpty {
                             CardView(
-                                cardManager: cardManager,
-                                purchaseManager: purchaseManager,
-                                currentIndex: $currentIndex,
-                                dragOffset: $dragOffset,
-                                isDragging: $isDragging,
-                                isCardFlipped: $isCardFlipped,
-                                showPurchaseView: $showPurchaseView,
-                                showSwipeHint: $showSwipeHint
-                            )
+                                    cardManager: cardManager,
+                                    purchaseManager: purchaseManager,
+                                    dragOffset: $dragOffset,
+                                    isDragging: $isDragging,
+                                    isCardFlipped: $isCardFlipped,
+                                    showPurchaseView: $showPurchaseView,
+                                    showSwipeHint: $showSwipeHint
+                                )
                             
                             Spacer(minLength: 20)
                             
@@ -133,8 +133,8 @@ struct ContentView: View {
                             
                             Spacer()
                         }
-                    }
-                        
+                    }.id(cardManager.cardSource.rawValue) // 添加id确保模式切换时完全重建ScrollView
+                    } 
                     
                     Spacer()
                     
