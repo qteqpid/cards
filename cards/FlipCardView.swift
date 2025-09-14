@@ -19,7 +19,7 @@ struct FlipCardView: View {
                 .opacity(isFlipped ? 0 : 1)
             
             // 背面
-            CardBackView(cardSide: card.back)
+            CardBackView(cardSide: card.back, cardId: card.id)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 0 : -180),
                     axis: (x: 0, y: 1, z: 0)
@@ -146,11 +146,11 @@ struct CardFrontView: View {
             }
             .padding(30)
             .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-            .background(CardBackgroundView())
+            .background(CardBackgroundView(cardId: cardId))
             
             // 在收藏模式下显示浮动的收藏图标，位于卡片左上角
             if cardManager.isFavoriteMode() {
-                if let favoriteImage = AppConfigs.loadImage(imageName: "favorite", imageType: "png") {
+                if let favoriteImage = AppConfigs.loadImage(name: "favorite.png") {
                     Image(uiImage: favoriteImage)
                         .resizable()
                         .frame(width: 80, height: 80)
@@ -159,7 +159,7 @@ struct CardFrontView: View {
                         .transition(.scale)
                 }
             } else {
-                if let author, let originalImage = AppConfigs.loadImage(imageName: "original", imageType: "png") {
+                if let author, let originalImage = AppConfigs.loadImage(name: "original.png") {
                     Image(uiImage: originalImage)
                         .resizable()
                         .frame(width: 80, height: 80)
@@ -230,6 +230,7 @@ struct CardFrontView: View {
 
 struct CardBackView: View {
     let cardSide: CardSide
+    let cardId: Int
     // 移除环境变量引用，不再使用延迟显示效果
     
     var body: some View {
@@ -279,26 +280,24 @@ struct CardBackView: View {
         }
         .padding(30)
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-        .background(CardBackgroundView())
+        .background(CardBackgroundView(cardId: cardId))
     }
 }
 
 // 创建共用的卡片背景视图组件
 struct CardBackgroundView: View {
+    let cardId: Int
     @EnvironmentObject private var cardManager: CardManager // 使用环境对象访问CardManager
     
     var body: some View {
         ZStack {
             // 通过Bundle文件路径加载图片
-            if let image = AppConfigs.loadImage(imageName: "paper", imageType: "png") {
+            if let image = AppConfigs.loadImage(name: "paper.png") {
                 Image(uiImage: image)
                     
                     .resizable()
-                    //.frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
                     .scaledToFill()
-                    
-                    //.clipShape(RoundedRectangle(cornerRadius: 25))
-                    .shadow(color: cardManager.isFavoriteMode() ? .white : .clear, radius: 2, x: 0, y: 0)
+                    .shadow(color: cardManager.isFavorite(cardId: cardId) ? .yellow : .clear, radius: 2, x: 0, y: 0)
             } else {
                 // 如果加载失败，显示一个备用的米色背景
                 Color(red: 0.94, green: 0.91, blue: 0.81)

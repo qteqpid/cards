@@ -67,10 +67,16 @@ struct AppConfigs {
         }
     }
 
+    static var cachedImages = [String: UIImage]()
+
     static func loadImage(name: String?) -> UIImage? {
         guard let name = name else {
             print("图片名称为空")
             return nil
+        }
+        // 检查缓存中是否已加载该图片
+        if let cachedImage = cachedImages[name] {
+            return cachedImage
         }
         // 解析文件名和扩展名
         let components = name.split(separator: ".")
@@ -78,16 +84,13 @@ struct AppConfigs {
             print("无效的图片名称格式: \(name)")
             return nil
         }
-
         let imageName = String(components[0])
         let imageType = String(components[1])
-        return loadImage(imageName: imageName, imageType: imageType)
-    }
-    
-    static func loadImage(imageName: String, imageType: String) -> UIImage? {
-        // 从bundle直接加载图片
         if let filePath = Bundle.main.path(forResource: imageName, ofType: imageType) {
-            return UIImage(contentsOfFile: filePath)
+            let image = UIImage(contentsOfFile: filePath)
+            // 缓存加载的图片
+            cachedImages[name] = image
+            return image
         }
         print("无法加载图片"+imageName)
         return nil

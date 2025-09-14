@@ -223,7 +223,7 @@ struct ContentView: View {
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
                         
                         // 加载stamp图片并绘制在右下角
-                        if let stampImage = AppConfigs.loadImage(imageName: "stamp_1", imageType: "png") {
+                        if let stampImage = AppConfigs.loadImage(name: "stamp_1.png") {
                             let stampRect = CGRect(
                                 x: window.bounds.width - stampImage.size.width - 50,
                                 y: window.bounds.height - stampImage.size.height - 170,
@@ -233,7 +233,7 @@ struct ContentView: View {
                             stampImage.draw(in: stampRect)
                         }
                         // 加载二维码图片并绘制在右下角
-                        if let qrCodeImage = AppConfigs.loadImage(imageName: "qr_code", imageType: "png") {
+                        if let qrCodeImage = AppConfigs.loadImage(name: "qr_code.png") {
                             let qrCodeSize: CGFloat = 60 // 二维码大小
                             let margin: CGFloat = 40 // 距离边缘的边距
                             let textHeight: CGFloat = 20 // 文字高度

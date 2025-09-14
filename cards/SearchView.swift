@@ -20,7 +20,7 @@ struct SearchView: View {
                         .padding(.leading, 12)
                     
                     // 搜索文本输入
-                    TextField("搜索卡片...", text: $cardManager.searchText)
+                    TextField("搜索海龟汤...", text: $cardManager.searchText)
                         .padding(.vertical, 16)
                         .padding(.trailing, 12)
                         .foregroundColor(Color.primary)
@@ -44,7 +44,7 @@ struct SearchView: View {
                 }
             }
             // turtle图片 - 添加发光效果
-            if let turtle = AppConfigs.loadImage(imageName: "turtle", imageType: "png") {
+            if let turtle = AppConfigs.loadImage(name: "turtle.png") {
                 Image(uiImage: turtle)
                     .resizable()
                     .scaledToFit()
