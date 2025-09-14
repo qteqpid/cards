@@ -6,7 +6,7 @@ struct AppTitleView: View {
     @ObservedObject var cardManager: CardManager
     
     var body: some View {
-        Text(AppConfigs.appTitle)
+        Text(cardManager.isFavoriteMode() ? "我收藏的汤" : AppConfigs.appTitle)
             .font(.system(size: AppConfigs.appTitleSize, weight: .black, design: .rounded))
             .foregroundStyle(
                 LinearGradient(

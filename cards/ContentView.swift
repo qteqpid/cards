@@ -143,8 +143,7 @@ struct ContentView: View {
                         geometry in
                         HStack {
                             Spacer()
-                            SearchView(cardManager: cardManager)
-                                .padding(.horizontal, 20)
+                            TurtleView(cardManager: cardManager)
                                 .position(x: geometry.size.width / 2, y: geometry.size.height * 0.7) // 定位到屏幕中下位置
                             Spacer()
                         }
