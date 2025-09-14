@@ -297,7 +297,7 @@ struct CardBackgroundView: View {
                     
                     .resizable()
                     .scaledToFill()
-                    .shadow(color: cardManager.isFavorite(cardId: cardId) ? .yellow : .clear, radius: 2, x: 0, y: 0)
+                    .shadow(color: cardManager.isFavorite(cardId: cardId) ? .yellow : .clear, radius: 5, x: 0, y: 0)
             } else {
                 // 如果加载失败，显示一个备用的米色背景
                 Color(red: 0.94, green: 0.91, blue: 0.81)
