@@ -88,7 +88,6 @@ struct ContentView: View {
 
                     Spacer()
                     
-                    ZStack {
                     ScrollView {
                         if !cardManager.displayCards().isEmpty {
                             CardView(
@@ -133,8 +132,7 @@ struct ContentView: View {
                             
                             Spacer()
                         }
-                    }.id(cardManager.cardSource.rawValue) // 添加id确保模式切换时完全重建ScrollView
-                    } 
+                    }.id(cardManager.displayCards().isEmpty ? -1 : cardManager.displayCards()[cardManager.currentIndex].id) // 添加id确保模式切换时完全重建ScrollView
                     
                     Spacer()
                     

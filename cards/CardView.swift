@@ -32,7 +32,6 @@ struct CardView: View {
                     .offset(x: dragOffset)
                     .rotationEffect(.degrees(dragOffset * 0.1))
                     .scaleEffect(1.0 - abs(dragOffset) * 0.001)
-                    .id("\(cardManager.cardSource.rawValue)-\(cardManager.currentIndex)") // 添加id确保模式切换和索引变化时完全重建视图
                     .gesture(
                         DragGesture()
                             .onChanged { value in
