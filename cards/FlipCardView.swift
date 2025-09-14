@@ -154,7 +154,7 @@ struct CardFrontView: View {
                     Image(uiImage: favoriteImage)
                         .resizable()
                         .frame(width: 80, height: 80)
-                        .position(x: 60, y: 60)
+                        .position(x: 70, y: 70)
                         .opacity(0.6)
                         .transition(.scale)
                 }
@@ -163,7 +163,7 @@ struct CardFrontView: View {
                     Image(uiImage: originalImage)
                         .resizable()
                         .frame(width: 80, height: 80)
-                        .position(x: 60, y: 60)
+                        .position(x: 70, y: 70)
                         .opacity(0.6)
                         .transition(.scale)
                 }
@@ -285,20 +285,25 @@ struct CardBackView: View {
 
 // 创建共用的卡片背景视图组件
 struct CardBackgroundView: View {
+    @EnvironmentObject private var cardManager: CardManager // 使用环境对象访问CardManager
+    
     var body: some View {
         ZStack {
             // 通过Bundle文件路径加载图片
             if let image = AppConfigs.loadImage(imageName: "paper", imageType: "png") {
                 Image(uiImage: image)
+                    
                     .resizable()
+                    //.frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
                     .scaledToFill()
-                    .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                    
+                    //.clipShape(RoundedRectangle(cornerRadius: 25))
+                    .shadow(color: cardManager.isFavoriteMode() ? .white : .clear, radius: 2, x: 0, y: 0)
             } else {
                 // 如果加载失败，显示一个备用的米色背景
                 Color(red: 0.94, green: 0.91, blue: 0.81)
                     .clipShape(RoundedRectangle(cornerRadius: 25))
             }
-        }
+        }.padding(10)
     }
 }

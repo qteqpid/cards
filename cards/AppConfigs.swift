@@ -95,7 +95,7 @@ struct AppConfigs {
 
     static var currentBgMap: BgMap {
         // iphone 16 屏幕中心啊点 196, 426
-        return BgMap(bgImage: "app_bg1.png", touchpoints: [
+        return BgMap(bgImage: "app_bg.png", touchpoints: [
             TouchPoint(
                 name: TouchPointName.paper,
                 image: "paper_ro_right.png",
