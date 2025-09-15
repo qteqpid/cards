@@ -20,7 +20,7 @@ class AppRatingManager {
     
     // 触发条件阈值
     private let requiredLaunchCount = 3
-    private let requiredButtonTapCount = 2 // 实际上这个值是触发了几次乌龟
+    private let requiredButtonTapCount = 3 // 实际上这个值是触发了几次乌龟
     
     // 获取和增加启动次数
     var launchCount: Int {

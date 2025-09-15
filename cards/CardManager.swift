@@ -58,13 +58,11 @@ class CardManager: ObservableObject {
             
             // 提取前10个isTop为true的卡片
             let topCards = cards.filter { $0.isTop ?? false }.prefix(10)
-            print("topCards count" + String(topCards.count))
             // 创建一个新的数组，将topCards放在最前面，然后添加剩余的卡片
             let remainingCards = cards.filter { card in 
                 // 确保不包含已经在topCards中的卡片
                 !topCards.contains { $0.id == card.id }
             }
-            print("remainingCards count"+String(remainingCards.count))
             cards = Array(topCards) + remainingCards
             
             isLoading = false

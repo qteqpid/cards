@@ -75,12 +75,20 @@ class MusicPlayer: ObservableObject {
     private var audioPlayer: AVAudioPlayer?
     private let audioFileName = "bg_audio"
     private let audioFileType = "m4a"
+    private let isPlayingKey = "music_is_playing"
     
     // 单例模式，确保整个应用中只有一个音乐播放器实例
     static let shared = MusicPlayer()
     
     // 私有初始化方法，防止外部创建实例
     private init() {
+        // 检查是否存在存储的设置，如果不存在则默认为true
+        if UserDefaults.standard.object(forKey: isPlayingKey) != nil {
+            isPlaying = UserDefaults.standard.bool(forKey: isPlayingKey)
+        } else {
+            isPlaying = true
+        }
+        
         if isPlaying {
             initializePlayer()
         }
@@ -93,9 +101,11 @@ class MusicPlayer: ObservableObject {
             if player.isPlaying {
                 player.pause()
                 isPlaying = false
+                UserDefaults.standard.set(isPlaying, forKey: isPlayingKey)
             } else {
                 player.play()
                 isPlaying = true
+                UserDefaults.standard.set(isPlaying, forKey: isPlayingKey)
             }
         } else {
             // 首次创建播放器实例
@@ -117,6 +127,7 @@ class MusicPlayer: ObservableObject {
                 audioPlayer?.numberOfLoops = -1 // 设置循环播放
                 audioPlayer?.play()
                 isPlaying = true
+                UserDefaults.standard.set(isPlaying, forKey: isPlayingKey)
             } else {
                 print("无法找到音频文件 \(audioFileName).\(audioFileType)")
             }
@@ -130,6 +141,7 @@ class MusicPlayer: ObservableObject {
         audioPlayer?.stop()
         audioPlayer = nil
         isPlaying = false
+        UserDefaults.standard.set(isPlaying, forKey: isPlayingKey)
         
         do {
             try AVAudioSession.sharedInstance().setActive(false)

@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct TouchPointsLayerView: View {
-    @ObservedObject var cardManager: CardManager
-    @ObservedObject var musicPlayer: MusicPlayer
+    @ObservedObject private var musicPlayer = MusicPlayer.shared
     @Binding var showScrollView: Bool
     @Binding var showRatingAlert: Bool // 控制是否显示评分邀请弹窗
     
@@ -91,16 +90,18 @@ struct TouchPointsLayerView: View {
                             } else {
                                 TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
                                 TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
-                                if (!AppRatingManager.shared.hasShownRatingAlert) {
-                                    AppRatingManager.shared.incrementButtonTapCount()
-                                    if (AppRatingManager.shared.shouldShowRatingAlert()) {
-                                        showRatingAlert = true
-                                    }
+                                AppRatingManager.shared.incrementButtonTapCount()
+                                if (AppRatingManager.shared.shouldShowRatingAlert()) {
+                                    showRatingAlert = true
                                 }
                             }
                         case .introduceSearch:
                             TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
                             TurtleBot.shared.speak("双击主页顶部大标题就可以搜索海龟汤，快去试试吧！\n对了，帮忙双击下我的龟脑袋，我先去休息了")
+                            AppRatingManager.shared.incrementButtonTapCount()
+                            if (AppRatingManager.shared.shouldShowRatingAlert()) {
+                                showRatingAlert = true
+                            }
                         }
                     }
                 }

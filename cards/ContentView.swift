@@ -56,7 +56,6 @@ struct ContentView: View {
     @State private var showEmptyFavoritesAlert = false // 控制收藏列表为空提示框的显示
     @State private var showRatingAlert = false // 控制是否显示评分邀请弹窗
     @State private var showScrollView = true // 控制ScrollView的显示/隐藏
-    @ObservedObject private var musicPlayer = MusicPlayer.shared
     // 添加对TurtleBot的观察，确保UI正确响应isVisible的变化
     @ObservedObject private var turtleBot = TurtleBot.shared
 
@@ -64,7 +63,7 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 // touchpoints层
-                TouchPointsLayerView(cardManager: cardManager, musicPlayer: musicPlayer, showScrollView: $showScrollView, showRatingAlert: $showRatingAlert)
+                TouchPointsLayerView(showScrollView: $showScrollView, showRatingAlert: $showRatingAlert)
             
                 VStack {
                     // 导航栏 - 使用ZStack实现标题严格居中
@@ -77,7 +76,6 @@ struct ContentView: View {
                             HeadButtonsView(
                                 cardManager: cardManager,
                                 purchaseManager: purchaseManager,
-                                musicPlayer: musicPlayer,
                                 isCardFlipped: $isCardFlipped,
                                 showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
                                 showPurchaseView: $showPurchaseView,
@@ -289,7 +287,6 @@ struct ContentView: View {
 struct HeadButtonsView: View {
     let cardManager: CardManager
     let purchaseManager: InAppPurchaseManager
-    let musicPlayer: MusicPlayer
     @Binding var isCardFlipped: Bool
     @Binding var showEmptyFavoritesAlert: Bool
     @Binding var showPurchaseView: Bool
