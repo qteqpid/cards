@@ -11,6 +11,7 @@ struct TouchPointsLayerView: View {
     @ObservedObject var cardManager: CardManager
     @ObservedObject var musicPlayer: MusicPlayer
     @Binding var showScrollView: Bool
+    @Binding var showRatingAlert: Bool // 控制是否显示评分邀请弹窗
     
     // 存储每个touchpoint的临时位置
     @State private var dragPositions: [String: CGPoint] = [:]
@@ -85,10 +86,21 @@ struct TouchPointsLayerView: View {
                         case .toggleMusic:
                             self.musicPlayer.togglePlayback()
                         case .triggerTurtle:
-                            self.cardManager.searchText = ""
-                            self.cardManager.switchCardSource(to: .search)
-                        //default:
-                            // Do nothing
+                            if (TurtleBot.shared.isVisible) {
+                                TurtleBot.shared.hide()
+                            } else {
+                                TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
+                                TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
+                                if (!AppRatingManager.shared.hasShownRatingAlert) {
+                                    AppRatingManager.shared.incrementButtonTapCount()
+                                    if (AppRatingManager.shared.shouldShowRatingAlert()) {
+                                        showRatingAlert = true
+                                    }
+                                }
+                            }
+                        case .introduceSearch:
+                            TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
+                            TurtleBot.shared.speak("双击主页顶部大标题就可以搜索海龟汤，快去试试吧！\n对了，帮忙双击下我的龟脑袋，我先去休息了")
                         }
                     }
                 }

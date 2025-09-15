@@ -57,12 +57,14 @@ struct ContentView: View {
     @State private var showRatingAlert = false // 控制是否显示评分邀请弹窗
     @State private var showScrollView = true // 控制ScrollView的显示/隐藏
     @ObservedObject private var musicPlayer = MusicPlayer.shared
-    
+    // 添加对TurtleBot的观察，确保UI正确响应isVisible的变化
+    @ObservedObject private var turtleBot = TurtleBot.shared
+
     var body: some View {
         NavigationStack {
             ZStack {
                 // touchpoints层
-                TouchPointsLayerView(cardManager: cardManager, musicPlayer: musicPlayer, showScrollView: $showScrollView)
+                TouchPointsLayerView(cardManager: cardManager, musicPlayer: musicPlayer, showScrollView: $showScrollView, showRatingAlert: $showRatingAlert)
             
                 VStack {
                     // 导航栏 - 使用ZStack实现标题严格居中
@@ -137,17 +139,15 @@ struct ContentView: View {
                     Spacer()
                     
                 }.opacity(showScrollView ? 1 : 0)
+                .scaleEffect(showScrollView ? 1 : 0.2) // 从1.2缩放到0.2，变化更明显
+                .animation(.easeIn(duration: 0.6), value: showScrollView) // 稍微延长动画时间
                 // 搜索视图 - 独立层级，位于屏幕中下位置
-                if TurtleBot.shared.isVisible && showShareButton {
-                    GeometryReader {
-                        geometry in
+                if turtleBot.isVisible { // 使用@ObservedObject的turtleBot属性而不是直接使用TurtleBot.shared
                         HStack {
                             Spacer()
                             TurtleView(cardManager: cardManager)
-                                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.7) // 定位到屏幕中下位置
                             Spacer()
                         }
-                    }
                 }
             }
             .background {

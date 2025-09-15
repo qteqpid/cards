@@ -89,7 +89,7 @@ struct AppTitleView: View {
                                 }
                         )
                         .onTapGesture(count: 2) {
-                            withAnimation {
+                            if (cardManager.isAllMode()) {
                                 cardManager.searchText = ""
                                 cardManager.switchCardSource(to: .search)
                             }

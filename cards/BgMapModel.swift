@@ -11,6 +11,7 @@ enum TouchAction {
     case displayCards
     case toggleMusic
     case triggerTurtle
+    case introduceSearch
 }
 
 struct TouchPoint {
