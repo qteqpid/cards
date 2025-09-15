@@ -144,6 +144,7 @@ class CardManager: ObservableObject {
                     // 搜索卡片的标题、描述
                     ($0.front.title ?? "").lowercased().contains(lowercasedSearchText) ||
                     ($0.front.description ?? "").lowercased().contains(lowercasedSearchText) ||
+                    ($0.labels ?? []).contains(lowercasedSearchText) ||
                     ($0.back.description ?? "").lowercased().contains(lowercasedSearchText)
                 }
             }

@@ -19,6 +19,7 @@ class TurtleBot: ObservableObject {
     // 单例实例
     static let shared = TurtleBot()
     
+    @Published var isVisible = false
     @Published var botState = BotState.isWaiting
     @Published var userInput = "" // 存储识别到的文本
     @Published var fullResponseText = "" // 存储完整的回复文本

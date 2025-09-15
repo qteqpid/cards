@@ -138,7 +138,7 @@ struct ContentView: View {
                     
                 }.opacity(showScrollView ? 1 : 0)
                 // 搜索视图 - 独立层级，位于屏幕中下位置
-                if cardManager.isSearchMode() && showShareButton {
+                if TurtleBot.shared.isVisible && showShareButton {
                     GeometryReader {
                         geometry in
                         HStack {

@@ -130,7 +130,7 @@ struct PurchaseView: View {
                 showRatingAlert = true
             }
         } message: {
-            Text("第一个彩蛋在页面顶部大标题\"海龟汤来了\"里，快去双击它看看！\n第二个彩蛋在汤里，不知道你遇到它了没? 👻")
+            Text("第一个彩蛋在页面顶部大标题\"海龟汤来了\"里，快去双击它看看！\n有了第一个彩蛋，试试怎么用它找到第二个彩蛋? 👻")
         }
         .onAppear {
             Task {

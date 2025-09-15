@@ -4,8 +4,9 @@ import SwiftUI
 /// 用于统一管理应用中的UI尺寸、颜色和文本配置
 struct AppConfigs {
     
-
+    // iphone 16的屏幕高度
     static let heightToCompared: CGFloat = 852.0
+    // 根据上面高度和9:16的比例计算出来的宽度
     static let widthToCompared: CGFloat = 480.0
 
     // MARK: - 应用文本配置
@@ -47,16 +48,21 @@ struct AppConfigs {
     static var isIphone: Bool {
         return UIDevice.current.userInterfaceIdiom == .phone
     }
+
+    static var screenWidth: CGFloat {
+        return UIScreen.main.bounds.width
+    }
+
+    static var screenHeight: CGFloat {
+        return UIScreen.main.bounds.height
+    }
     
     static var cardHeight: CGFloat {
-        let screenHeight = UIScreen.main.bounds.height
         let fourSixthsHeight = screenHeight * 2/3 // 从3/5增加到2/3，提供更多显示空间
         return fourSixthsHeight
     }
 
     static var cardWidth: CGFloat {
-        let screenWidth = UIScreen.main.bounds.width
-        
         // 针对不同设备类型设置不同的卡片宽度策略
         if isIpad {
             // iPad设备：卡片宽度为屏幕宽度的60%，最小宽度400
@@ -125,7 +131,7 @@ struct AppConfigs {
                 action: nil),
             TouchPoint( 
                 name: TouchPointName.turtle,
-                image: "turtle.png", 
+                image: "turtle_night_icon.png", 
                 positionX: -100,
                 positionY: -136,
                 frameWidth: 50,
