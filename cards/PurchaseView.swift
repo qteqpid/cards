@@ -100,7 +100,11 @@ struct PurchaseView: View {
                         
                         Button("稍后再说") {
                             dismiss()
-                            showRatingAlert = true
+                            // 标记为已显示过评分弹窗
+                            if !AppRatingManager.shared.hasShownRatingAlertAfterPurchase {
+                                AppRatingManager.shared.hasShownRatingAlertAfterPurchase = true
+                                showRatingAlert = true
+                            }
                         }
                         .foregroundColor(.gray)
                         .font(.subheadline)
@@ -127,7 +131,11 @@ struct PurchaseView: View {
         .alert("购买成功", isPresented: $showSuccessAlert) {
             Button("开始探索") {
                 dismiss()
-                showRatingAlert = true
+                // 标记为已显示过评分弹窗
+                if !AppRatingManager.shared.hasShownRatingAlertAfterPurchase {
+                    AppRatingManager.shared.hasShownRatingAlertAfterPurchase = true
+                    showRatingAlert = true
+                }
             }
         } message: {
             Text("第一个彩蛋在页面顶部大标题\"海龟汤来了\"里，快去双击它看看！\n有了第一个彩蛋，试试怎么用它找到第二个彩蛋? 👻")

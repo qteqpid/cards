@@ -17,6 +17,7 @@ class AppRatingManager {
     private let launchCountKey = "app_launch_count"
     private let buttonTapCountKey = "game_button_tap_count"
     private let hasShownRatingAlertKey = "has_shown_rating_alert"
+    private let hasShownRatingAlertAfterPurchaseKey = "has_shown_rating_alert_after_purchase"
     
     // 触发条件阈值
     private let requiredLaunchCount = 3
@@ -39,6 +40,13 @@ class AppRatingManager {
         get { UserDefaults.standard.bool(forKey: hasShownRatingAlertKey) }
         set { UserDefaults.standard.set(newValue, forKey: hasShownRatingAlertKey) }
     }
+
+    // 是否已显示过评分弹窗
+    var hasShownRatingAlertAfterPurchase: Bool {
+        get { UserDefaults.standard.bool(forKey: hasShownRatingAlertAfterPurchaseKey) }
+        set { UserDefaults.standard.set(newValue, forKey: hasShownRatingAlertAfterPurchaseKey) }
+    }
+    
     
     // 增加启动次数
     func incrementLaunchCount() {

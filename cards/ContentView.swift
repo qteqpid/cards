@@ -306,12 +306,21 @@ struct HeadButtonsView: View {
             
             Spacer()
 
-            // 音乐播放按钮组件
+            // 地图按钮组件
             Button(action: {
                 if purchaseManager.shouldShowPurchaseAlert() {
                     showPurchaseView = true
                 } else {
                     showScrollView = false
+                    if !UserTracker.shared.hasEnteredMap {
+                        // 未进入过地图，这是第一次
+                        UserTracker.shared.hasEnteredMap = true
+                        // 添加1秒延迟后再执行
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
+                            TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
+                        }
+                    }
                 }
             }) {
                 
@@ -323,7 +332,7 @@ struct HeadButtonsView: View {
                 }
             }
             
-            // 分享按钮
+            // 截图分享按钮
             Button(action: {
                 captureAndSaveScreenshot()
             }) {
