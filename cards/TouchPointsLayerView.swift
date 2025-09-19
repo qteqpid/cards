@@ -11,6 +11,7 @@ struct TouchPointsLayerView: View {
     @ObservedObject private var musicPlayer = MusicPlayer.shared
     @Binding var showScrollView: Bool
     @Binding var showRatingAlert: Bool // 控制是否显示评分邀请弹窗
+    @Binding var showSettings: Bool
     
     // 存储每个touchpoint的临时位置
     @State private var dragPositions: [String: CGPoint] = [:]
@@ -61,7 +62,7 @@ struct TouchPointsLayerView: View {
                 .scaledToFit()
                 .frame(width: actualWidth, height: actualHeight)
                 // 为music_symbol.png图片添加一圈白光效果
-                .shadow(color: touchpoint.name == TouchPointName.music ? .white : .clear, radius: 10, x: 0, y: 0)
+                .shadow(color: touchpoint.name == TouchPointName.music ? .white : .yellow, radius: 5, x: 0, y: 0)
                 .position(actualPosition)
                 .gesture(
                     DragGesture()
@@ -80,29 +81,32 @@ struct TouchPointsLayerView: View {
                 .onTapGesture {
                     if let action = touchpoint.action {
                         switch action {
-                        case .displayCards:
-                            showScrollView = true
-                        case .toggleMusic:
-                            self.musicPlayer.togglePlayback()
-                        case .triggerTurtle:
-                            if (TurtleBot.shared.isVisible) {
-                                TurtleBot.shared.hide()
-                            } else {
+                            case .displayCards:
+                                showScrollView = true
+                            case .toggleMusic:
+                                self.musicPlayer.togglePlayback()
+                            case .triggerTurtle:
+                                if (TurtleBot.shared.isVisible) {
+                                    TurtleBot.shared.hide()
+                                } else {
+                                    TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
+                                    TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
+                                    AppRatingManager.shared.incrementButtonTapCount()
+                                    if (AppRatingManager.shared.shouldShowRatingAlert()) {
+                                        showRatingAlert = true
+                                    }
+                                }
+                            case .introduceSearch:
                                 TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
-                                TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
+                                TurtleBot.shared.speak("双击主页顶部大标题就可以搜索海龟汤，快去试试吧！\n对了，帮忙双击下我的龟脑袋，我先去休息了")
                                 AppRatingManager.shared.incrementButtonTapCount()
                                 if (AppRatingManager.shared.shouldShowRatingAlert()) {
                                     showRatingAlert = true
                                 }
-                            }
-                        case .introduceSearch:
-                            TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
-                            TurtleBot.shared.speak("双击主页顶部大标题就可以搜索海龟汤，快去试试吧！\n对了，帮忙双击下我的龟脑袋，我先去休息了")
-                            AppRatingManager.shared.incrementButtonTapCount()
-                            if (AppRatingManager.shared.shouldShowRatingAlert()) {
-                                showRatingAlert = true
-                            }
+                            case .showSettings:
+                                showSettings = true
                         }
+                        
                     }
                 }
             

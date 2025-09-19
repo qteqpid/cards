@@ -74,6 +74,22 @@ struct AppConfigs {
         }
     }
 
+        // 获取应用的版本号
+    static var appVersion: String {
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return version
+        }
+        return "1.0"
+    }
+
+    static func openUrl(url: String) {
+        if let targetUrl = URL(string: url) {
+            if UIApplication.shared.canOpenURL(targetUrl) {
+                UIApplication.shared.open(targetUrl, options: [:], completionHandler: nil)
+            }
+        }
+    }
+
     static var cachedImages = [String: UIImage]()
 
     static func loadImage(name: String?) -> UIImage? {
@@ -145,9 +161,9 @@ struct AppConfigs {
                 positionY: -275,
                 frameWidth: 100,
                 frameHeight: 100,
-                action: nil),
+                action: .showSettings),
             TouchPoint(
-                name: TouchPointName.calendar,
+                name: TouchPointName.magnifier,
                 image: "magnifier_icon.png",
                 positionX: 177,
                 positionY: 226,

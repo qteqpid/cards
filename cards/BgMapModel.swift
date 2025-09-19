@@ -6,12 +6,14 @@ enum TouchPointName {
     case paper
     case music
     case calendar
+    case magnifier
 }
 enum TouchAction {
     case displayCards
     case toggleMusic
     case triggerTurtle
     case introduceSearch
+    case showSettings
 }
 
 struct TouchPoint {

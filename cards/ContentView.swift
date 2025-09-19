@@ -55,6 +55,7 @@ struct ContentView: View {
     @State private var showSaveSuccessAlert = false // 控制保存成功提示框的显示
     @State private var showEmptyFavoritesAlert = false // 控制收藏列表为空提示框的显示
     @State private var showRatingAlert = false // 控制是否显示评分邀请弹窗
+    @State private var showSettings = false // 控制是否显示settings
     @State private var showScrollView = true // 控制ScrollView的显示/隐藏
     // 添加对TurtleBot的观察，确保UI正确响应isVisible的变化
     @ObservedObject private var turtleBot = TurtleBot.shared
@@ -63,7 +64,7 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 // touchpoints层
-                TouchPointsLayerView(showScrollView: $showScrollView, showRatingAlert: $showRatingAlert)
+                TouchPointsLayerView(showScrollView: $showScrollView, showRatingAlert: $showRatingAlert, showSettings: $showSettings)
             
                 VStack {
                     // 导航栏 - 使用ZStack实现标题严格居中
@@ -179,6 +180,9 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showPurchaseView) {
                 PurchaseView(purchaseManager: purchaseManager, showRatingAlert: $showRatingAlert)
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView(backgroundColor: Color(hex: "#2d2d2d"))
             }
         }
     }
