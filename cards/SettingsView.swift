@@ -45,7 +45,7 @@ struct SettingsView: View {
                                .foregroundColor(.gray)
                        }
                        .onTapGesture {
-                           AppConfigs.openUrl(url: "itms-apps://itunes.apple.com/app/id6752640506")
+                           AppConfigs.openUrl(url: "itms-apps://itunes.apple.com/app/id6748849691")
                        }
                     
                         SettingsRow(iconName: "app_logo_class_mini.jpg", title: "简易课程表", isLast: false) {
