@@ -21,6 +21,7 @@ struct cardsApp: App {
                         }
                     }
                 }
+                .preferredColorScheme(.light)
         }
     }
 }

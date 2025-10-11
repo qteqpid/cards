@@ -90,6 +90,14 @@ struct AppConfigs {
         }
     }
 
+    static func getAppStoreUrl(appId: String) -> String {
+        if isIphone {
+            return "itms-apps://itunes.apple.com/app/id\(appId)"
+        } else {
+            return "https://apps.apple.com/app/id\(appId)"
+        }
+    }
+
     static var cachedImages = [String: UIImage]()
 
     static func loadImage(name: String?) -> UIImage? {

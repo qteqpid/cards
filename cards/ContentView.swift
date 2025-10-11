@@ -70,7 +70,7 @@ struct ContentView: View {
                     // 导航栏 - 使用ZStack实现标题严格居中
                     ZStack {
                         // 标题层 - 严格居中
-                        AppTitleView(purchaseManager: purchaseManager, cardManager: cardManager)
+                        AppTitleView(cardManager: cardManager)
                         
                         // 按钮层
                         if showShareButton {
@@ -182,7 +182,7 @@ struct ContentView: View {
                 PurchaseView(purchaseManager: purchaseManager, showRatingAlert: $showRatingAlert)
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView(backgroundColor: Color(hex: "#2d2d2d"))
+                SettingsView(purchaseManager: purchaseManager, backgroundColor: Color(hex: "#2d2d2d"))
             }
         }
     }

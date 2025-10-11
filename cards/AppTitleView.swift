@@ -2,7 +2,6 @@ import SwiftUI
 
 // 应用标题视图组件
 struct AppTitleView: View {
-    @ObservedObject var purchaseManager: InAppPurchaseManager
     @ObservedObject var cardManager: CardManager
     
     var body: some View {
@@ -80,13 +79,6 @@ struct AppTitleView: View {
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
-                        )
-                    // 后门：长按5秒设置为会员
-                        .gesture(
-                            LongPressGesture(minimumDuration: 5)
-                                .onEnded { _ in
-                                    purchaseManager.activatePremium()
-                                }
                         )
                         .onTapGesture(count: 2) {
                             if (cardManager.isAllMode()) {
