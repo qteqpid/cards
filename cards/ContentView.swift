@@ -57,6 +57,7 @@ struct ContentView: View {
     @State private var showRatingAlert = false // 控制是否显示评分邀请弹窗
     @State private var showSettings = false // 控制是否显示settings
     @State private var showScrollView = true // 控制ScrollView的显示/隐藏
+    @State private var showPhotoPermissionAlert = false // 控制相册权限提示Alert的显示
     // 添加对TurtleBot的观察，确保UI正确响应isVisible的变化
     @ObservedObject private var turtleBot = TurtleBot.shared
 
@@ -168,6 +169,16 @@ struct ContentView: View {
             } message: {
                 Text("请双击纸张收藏喜欢的海龟汤题目吧!")
             }
+            .alert("需要相册权限", isPresented: $showPhotoPermissionAlert) {
+                Button("取消", role: .cancel) {}
+                Button("去设置") {
+                    if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(settingsUrl)
+                    }
+                }
+            } message: {
+                Text("需要访问相册权限才能保存截图，请在设备设置中修改。")
+            }
             .alert("喜欢这个app的设计吗？", isPresented: $showRatingAlert) {
                 Button("不喜欢") {}
                 Button("喜欢") {
@@ -193,10 +204,9 @@ struct ContentView: View {
         // 检查相册权限
         PHPhotoLibrary.requestAuthorization { status in
             guard status == .authorized else {
-                // 如果用户拒绝授权，可以显示提示
+                // 如果用户拒绝授权，显示提示Alert
                 DispatchQueue.main.async {
-                    // 这里可以添加一个提示，告知用户需要授权才能保存到相册
-                    print("需要相册权限才能保存截图")
+                    self.showPhotoPermissionAlert = true
                 }
                 return
             }
