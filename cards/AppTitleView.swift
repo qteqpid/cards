@@ -19,10 +19,11 @@ struct AppTitleView: View {
                                 .padding(.leading, 8)
                             
                             // 搜索文本输入
-                            TextField("搜索海龟汤...", text: $cardManager.searchText)
+                            TextField("搜索海龟汤", text: $cardManager.searchText)
                                 .padding(.vertical, 8)
                                 .padding(.trailing, 12)
                                 .foregroundColor(Color.primary)
+                                .font(.system(size: 12)) // 缩小字体大小
                             
                             Image(systemName: "xmark.circle")
                                 .foregroundColor(Color.pink)

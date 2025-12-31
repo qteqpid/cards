@@ -15,10 +15,17 @@ class UserTracker {
     
     // UserDefaults存储键
     private let enteredMapKey = "entered_map"
+
+    private let shownInstructionKey = "shown_instruction"
     
     // 检查是否已进入地图
     var hasEnteredMap: Bool {
         get { UserDefaults.standard.bool(forKey: enteredMapKey) }
         set { UserDefaults.standard.set(newValue, forKey: enteredMapKey) }
+    }
+
+    var hasShownInstruction: Bool {
+        get { UserDefaults.standard.bool(forKey: shownInstructionKey) }
+        set { UserDefaults.standard.set(newValue, forKey: shownInstructionKey) }
     }
 }

@@ -8,14 +8,14 @@
 import SwiftUI
 
 // 卡片面数据模型
-struct CardSide: Codable {
+struct CardSide: Codable, Equatable {
     let title: String?
     let description: String?
     let icon: String?
 }
 
 // 卡片数据模型
-struct Card: Identifiable, Codable {
+struct Card: Identifiable, Codable, Equatable {
     // 从JSON加载的整数ID，实现Identifiable协议
     let id: Int
     // 原创作者

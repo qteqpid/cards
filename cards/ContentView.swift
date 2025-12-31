@@ -141,13 +141,20 @@ struct ContentView: View {
                 }.opacity(showScrollView ? 1 : 0)
                 .scaleEffect(showScrollView ? 1 : 0.2) // 从1.2缩放到0.2，变化更明显
                 .animation(.easeIn(duration: 0.6), value: showScrollView) // 稍微延长动画时间
-                // 搜索视图 - 独立层级，位于屏幕中下位置
-                if turtleBot.isVisible { // 使用@ObservedObject的turtleBot属性而不是直接使用TurtleBot.shared
-                        HStack {
-                            Spacer()
-                            TurtleView(cardManager: cardManager)
-                            Spacer()
-                        }
+                // 龟龟视图 - 独立层级，位于屏幕中下位置
+                if turtleBot.isInScenarioOf(scenario: Scenario.notification) { // 使用@ObservedObject的turtleBot属性而不是直接使用TurtleBot.shared
+                    HStack {
+                        Spacer()
+                        TurtleNotificationView(cardManager: cardManager)
+                        Spacer()
+                    }
+                } else if turtleBot.isInScenarioOf(scenario: Scenario.challenge) {
+                    HStack {
+                        Spacer()
+                        TurtleJudgeView(cardManager: cardManager)
+                            .id("turtle-judge-\(cardManager.cardSource)-\(cardManager.currentIndex)") // 添加id确保模式切换时重新创建
+                        Spacer()
+                    }
                 }
             }
             .background {
@@ -159,6 +166,13 @@ struct ContentView: View {
             // .ignoresSafeArea(.keyboard) // 移除全局的键盘安全区域忽略
             .environmentObject(cardManager)
             // 弹窗和页面修饰符
+            .onChange(of: cardManager.isAllMode() && showScrollView) { newValue in
+                if newValue {
+                    TurtleBot.shared.switchToScenario(scenario: .challenge)
+                } else {
+                    TurtleBot.shared.hide()
+                }
+            }
             .alert("保存成功", isPresented: $showSaveSuccessAlert) {
                 Button("确定", role: .cancel) {}
             } message: {
@@ -195,6 +209,9 @@ struct ContentView: View {
             .sheet(isPresented: $showSettings) {
                 SettingsView(purchaseManager: purchaseManager, backgroundColor: Color(hex: "#2d2d2d"))
             }
+        }
+        .onAppear {
+            TurtleBot.shared.switchToScenario(scenario: .challenge)
         }
     }
 
