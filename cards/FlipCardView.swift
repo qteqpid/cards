@@ -7,6 +7,7 @@ struct FlipCardView: View {
     @State private var animationTimer: Timer? = nil
     @ObservedObject var purchaseManager: InAppPurchaseManager
     @Binding var showPurchaseView: Bool
+    @State private var showTurtleHintAlert = false // 控制龟探长提示的显示
     
     var body: some View {
         ZStack {
@@ -34,10 +35,32 @@ struct FlipCardView: View {
                     showPurchaseView = true
                 } else {
                     purchaseManager.increaseUseTimes()
-                    isFlipped.toggle()
-                    resetDescriptionVisibility() // 重置描述文本的显示状态
+                    
+                    // 检查是否是第一次查看汤底
+                    if !isFlipped && UserTracker.shared.isFirstViewSoup {
+                        UserTracker.shared.isFirstViewSoup = false
+                        showTurtleHintAlert = true
+                    } else {
+                        // 如果不是第一次，直接翻转卡片
+                        isFlipped.toggle()
+                        resetDescriptionVisibility() // 重置描述文本的显示状态
+                    }
                 }
             }
+        }
+        .alert(isPresented: $showTurtleHintAlert) {
+            Alert(
+                title: Text("提示"),
+                message: Text("看汤底之前，要不要先点击汤面右上角的龟探长玩一玩？"),
+                primaryButton: .default(Text("继续查看汤底")) {
+                    // 继续查看汤底，翻转卡片
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        isFlipped.toggle()
+                        resetDescriptionVisibility()
+                    }
+                },
+                secondaryButton: .cancel(Text("好的"))
+            )
         }
         .onAppear {
             resetDescriptionVisibility() // 卡片出现时重置描述文本的显示状态

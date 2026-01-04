@@ -22,7 +22,7 @@ struct TouchPointsLayerView: View {
             if let touchpoints = AppConfigs.currentBgMap.touchpoints {
                 ForEach(touchpoints, id: \.image) {
                     touchpoint in
-               
+           
                     if (shouldShow(touchpoint: touchpoint)) {
                         if let touchImage = AppConfigs.loadImage(name: touchpoint.image) {
                             // 计算实际位置和尺寸
@@ -35,11 +35,60 @@ struct TouchPointsLayerView: View {
                 }
             }
         }
-        
+        .blur(radius: showScrollView ? 3 : 0) // 当showScrollView=true时添加模糊效果
+        .disabled(showScrollView) // 当showScrollView=true时禁用交互
         .ignoresSafeArea()
     }
     
     // 创建touchpoint视图的辅助方法，避免在ViewBuilder中进行复杂计算
+    // 内部视图结构体，用于封装带有动画的触摸点视图
+    private struct AnimatedTouchPointView: View {
+        let touchpoint: TouchPoint
+        let touchImage: UIImage
+        let actualPosition: CGPoint
+        let actualWidth: CGFloat
+        let actualHeight: CGFloat
+        let dragStartPosition: CGPoint
+        let handleDrag: (DragGesture.Value) -> Void
+        let handleDragEnd: () -> Void
+        let handleTap: () -> Void
+        
+        // 使用@State变量来驱动缩放动画
+        @State private var scale: CGFloat = 1.0
+        
+        var body: some View {
+            Image(uiImage: touchImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: actualWidth, height: actualHeight)
+                // 为music_symbol.png图片添加一圈白光效果
+                .shadow(color: touchpoint.name == TouchPointName.music ? .white : .yellow, radius: 5, x: 0, y: 0)
+                .position(actualPosition)
+                // 当isBounce为true时添加循环缩放动画
+                .scaleEffect(touchpoint.isBounce ? scale : 1.0)
+                .onAppear {
+                    if touchpoint.isBounce {
+                        // 使用withAnimation创建循环动画
+                        withAnimation(Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                            scale = 1.01
+                        }
+                    }
+                }
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            handleDrag(value)
+                        }
+                        .onEnded { _ in
+                            handleDragEnd()
+                        }
+                )
+                .onTapGesture {
+                    handleTap()
+                }
+        }
+    }
+    
     private func createTouchPointView(
         touchpoint: TouchPoint,
         touchImage: UIImage
@@ -57,28 +106,25 @@ struct TouchPointsLayerView: View {
         )
         
         return Group {
-            Image(uiImage: touchImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: actualWidth, height: actualHeight)
-                // 为music_symbol.png图片添加一圈白光效果
-                .shadow(color: touchpoint.name == TouchPointName.music ? .white : .yellow, radius: 5, x: 0, y: 0)
-                .position(actualPosition)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            // 拖动过程中更新位置
-                            self.dragPositions[touchpoint.image] = CGPoint(
-                                x: dragStartPosition.x + value.translation.width,
-                                y: dragStartPosition.y + value.translation.height
-                            )
-                        }
-                        .onEnded { _ in
-                            // 拖动结束后回到原始位置
-                            self.dragPositions[touchpoint.image] = nil
-                        }
-                )
-                .onTapGesture {
+            AnimatedTouchPointView(
+                touchpoint: touchpoint,
+                touchImage: touchImage,
+                actualPosition: actualPosition,
+                actualWidth: actualWidth,
+                actualHeight: actualHeight,
+                dragStartPosition: dragStartPosition,
+                handleDrag: { value in
+                    // 拖动过程中更新位置
+                    self.dragPositions[touchpoint.image] = CGPoint(
+                        x: dragStartPosition.x + value.translation.width,
+                        y: dragStartPosition.y + value.translation.height
+                    )
+                },
+                handleDragEnd: {
+                    // 拖动结束，重置位置
+                    self.dragPositions[touchpoint.image] = nil
+                },
+                handleTap: {
                     if let action = touchpoint.action {
                         switch action {
                             case .displayCards:
@@ -106,9 +152,9 @@ struct TouchPointsLayerView: View {
                             case .showSettings:
                                 showSettings = true
                         }
-                        
                     }
                 }
+            )
             
             if dragPositions[touchpoint.image] != nil {
                 // 在图片下方显示坐标值
@@ -122,7 +168,6 @@ struct TouchPointsLayerView: View {
                         y: actualPosition.y - 40
                     )
             }
-
         }
     }
     

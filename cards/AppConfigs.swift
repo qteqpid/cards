@@ -137,7 +137,8 @@ struct AppConfigs {
                 positionY: 154,
                 frameWidth: 100,
                 frameHeight: 100,
-                action: .displayCards),
+                action: .displayCards,
+                isBounce: true),
             TouchPoint(
                 name: TouchPointName.radio,
                 image: "radio.png", 
@@ -145,7 +146,8 @@ struct AppConfigs {
                 positionY: -41, 
                 frameWidth: 100, 
                 frameHeight: 100, 
-                action: .toggleMusic),
+                action: .toggleMusic,
+                isBounce: false),
             TouchPoint(
                 name: TouchPointName.music,
                 image: "music_symbol.png", 
@@ -153,7 +155,8 @@ struct AppConfigs {
                 positionY: -87,
                 frameWidth: 90,
                 frameHeight: 90, 
-                action: nil),
+                action: nil,
+                isBounce: false),
             TouchPoint( 
                 name: TouchPointName.turtle,
                 image: "turtle_night_icon.png", 
@@ -161,7 +164,8 @@ struct AppConfigs {
                 positionY: -136,
                 frameWidth: 50,
                 frameHeight: 50,
-                action: .triggerTurtle),
+                action: .triggerTurtle,
+                isBounce: false),
             TouchPoint(
                 name: TouchPointName.calendar,
                 image: "calendar_icon.png",
@@ -169,7 +173,8 @@ struct AppConfigs {
                 positionY: -275,
                 frameWidth: 100,
                 frameHeight: 100,
-                action: .showSettings),
+                action: .showSettings,
+                isBounce: false),
             TouchPoint(
                 name: TouchPointName.magnifier,
                 image: "magnifier_icon.png",
@@ -177,7 +182,8 @@ struct AppConfigs {
                 positionY: 226,
                 frameWidth: 80,
                 frameHeight: 80,
-                action: .introduceSearch)
+                action: .introduceSearch,
+                isBounce: false)
         ])
     }
 }

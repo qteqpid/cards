@@ -80,7 +80,7 @@ class TurtleBot: ObservableObject {
 
             var instruction = ""
             if !UserTracker.shared.hasShownInstruction {
-                instruction = "你有10次机会可以提问，我会根据汤底回答\"是/不是/不相关\"。"
+                instruction = "你有10次机会可以提问，我会根据汤底回答\"是/不是/不相关\"。\n"
                 UserTracker.shared.hasShownInstruction = true
             }
 
@@ -202,6 +202,8 @@ class TurtleBot: ObservableObject {
                                 // 更新回复内容
                                 let botMessage = Message(isUser: false, content: judgeResponse, userInputForJudge: userInput)
                                 self.conversationHistory.append(botMessage)
+                                // 增加使用次数
+                                InAppPurchaseManager.shared.increaseUseTimes()
                             }
                         } catch {
                             DispatchQueue.main.async {

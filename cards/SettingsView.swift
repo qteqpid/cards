@@ -61,7 +61,39 @@ struct SettingsView: View {
             VStack {
                 // 设置列表
                 List {
-                   Section() {
+                    // 海龟汤APP介绍Section
+                    Section(header: Text("关于海龟汤").foregroundColor(settingHeaderColor).font(.title2)) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("🐢 海龟汤是什么？")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            Text("海龟汤是一种风靡全球的情景推理游戏。玩家通过提问来还原故事真相，主持人只能用「是」、「不是」或「无关」来回答。")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .lineSpacing(5)
+                            
+                            Text("🎮 游戏玩法")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                                .padding(.top, 5)
+                            Text("1. 查看主界面卡片上的海龟汤题目（汤面）\n2. 点击卡片右上角的龟探长，启动AI主持模式\n3. 思考并提出问题，例如：「死者是自杀吗？」\n4. 根据回答持续提问，逐步接近真相\n5. 玩家也可以直接点击卡片，翻面查看完整故事（汤底）\n6. 左右滑动卡片即可切换海龟汤题目哦")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .lineSpacing(5)
+                            
+                            Text("✨ 主要功能")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                                .padding(.top, 5)
+                            Text("• 海量优质海龟汤，持续更新\n• 支持收藏喜欢的海龟汤题目\n• 背景音效增强游戏体验\n• 点击主界面地图图标，探索更多彩蛋")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .lineSpacing(5)
+                        }
+                        .padding(.vertical, 10)
+                    }
+                    
+                   Section(header: Text("作者的更多宝藏app").foregroundColor(settingHeaderColor).font(.title2)) {
                        // 使用ForEach遍历视图数组，实现map + foreach的展示方式
                        ForEach(appViews.indices, id: \.self) { index in
                            appViews[index]
@@ -107,7 +139,7 @@ struct SettingsView: View {
                 .background(backgroundColor)
                 .scrollContentBackground(.hidden)
                 .foregroundColor(.white)
-            }
+            }.padding(.top, 16)
         }
         .navigationTitle("Qteqpid的更多宝藏作品")
         .navigationBarTitleDisplayMode(.inline)

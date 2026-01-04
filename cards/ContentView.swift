@@ -82,6 +82,7 @@ struct ContentView: View {
                                 showEmptyFavoritesAlert: $showEmptyFavoritesAlert,
                                 showPurchaseView: $showPurchaseView,
                                 showScrollView: $showScrollView,
+                                showSettings: $showSettings,
                                 captureAndSaveScreenshot: captureAndSaveScreenshot
                             )
                         }
@@ -322,6 +323,7 @@ struct HeadButtonsView: View {
     @Binding var showEmptyFavoritesAlert: Bool
     @Binding var showPurchaseView: Bool
     @Binding var showScrollView: Bool
+    @Binding var showSettings: Bool
     let captureAndSaveScreenshot: () -> Void
     
     var body: some View {
@@ -363,12 +365,18 @@ struct HeadButtonsView: View {
                 }
             }
             
-            // 截图分享按钮
-            Button(action: {
-                captureAndSaveScreenshot()
-            }) {
-                if let mapIcon = AppConfigs.loadImage(name: "share_icon.png") {
-                    Image(uiImage: mapIcon)
+            // 截图分享按钮（改为Menu组件）
+            Menu {
+                Button("玩法介绍") {
+                    showSettings = true
+                }
+                Divider()
+                Button("截图分享") {
+                    captureAndSaveScreenshot()
+                }
+            } label: {
+                if let shareIcon = AppConfigs.loadImage(name: "share_icon.png") {
+                    Image(uiImage: shareIcon)
                         .resizable()
                         .scaledToFill()
                         .frame(width: AppConfigs.buttonSize, height: AppConfigs.buttonSize)

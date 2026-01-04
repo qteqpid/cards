@@ -24,6 +24,7 @@ struct TouchPoint {
     let frameWidth: CGFloat
     let frameHeight: CGFloat
     let action: TouchAction?
+    let isBounce: Bool // 新增：是否循环缩放，默认false
 }
 
 struct BgMap {
