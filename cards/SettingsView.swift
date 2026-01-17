@@ -23,6 +23,7 @@ struct SettingsView: View {
     // 应用列表数据
     private let apps: [AppInfo] = [
         AppInfo(iconName: "app_logo_class_mini.jpg", title: "ins课程表，超好用好看课程表", appleId: "6748935753"),
+        AppInfo(iconName: "app_logo_radio_mini.png", title: "晚安电台，聆听世界的声音", appleId: "6757656997"),
         //AppInfo(iconName: "app_logo_moon_mini.jpg", title: "海龟汤来了，风靡全球推理游戏", appleId: "6749227316"),
         AppInfo(iconName: "app_logo_english_mini.jpg", title: "贝塔英语，背单词很轻松", appleId: "6748849691"),
         AppInfo(iconName: "app_logo_idea_mini.png", title: "灵光一现，帮你随时记录想法", appleId: "6748610782"),
