@@ -375,7 +375,7 @@ struct HeadButtonsView: View {
                     captureAndSaveScreenshot()
                 }
             } label: {
-                if let shareIcon = AppConfigs.loadImage(name: "share_icon.png") {
+                if let shareIcon = AppConfigs.loadImage(name: "wenhao.png") {
                     Image(uiImage: shareIcon)
                         .resizable()
                         .scaledToFill()
