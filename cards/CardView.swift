@@ -21,14 +21,14 @@ struct CardView: View {
             ZStack {
                 // 背景卡片（下一张）- 只在拖拽时显示
                 if cardManager.hasNextIndex() && abs(dragOffset) > 10 {
-                    FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex + 1], isFlipped: .constant(false), purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
+                    FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex + 1], isFlipped: .constant(false), purchaseManager: purchaseManager, cardManager: cardManager, showPurchaseView: $showPurchaseView)
                         .scaleEffect(0.9)
                         .opacity(0.6)
                         .offset(x: dragOffset * 0.3)
                 }
                 
                 // 当前卡片
-                FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex], isFlipped: $isCardFlipped, purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
+                FlipCardView(card: cardManager.displayCards()[cardManager.currentIndex], isFlipped: $isCardFlipped, purchaseManager: purchaseManager, cardManager: cardManager, showPurchaseView: $showPurchaseView)
                     .offset(x: dragOffset)
                     .rotationEffect(.degrees(dragOffset * 0.1))
                     .scaleEffect(1.0 - abs(dragOffset) * 0.001)
@@ -49,10 +49,9 @@ struct CardView: View {
                                             cardManager.decreaseIndex()
                                             isCardFlipped = false // 重置翻面状态
                                         } else if value.translation.width < 0 && cardManager.currentIndex < cardManager.displayCards().count - 1 {
-                                            if purchaseManager.shouldShowPurchaseAlert() {
+                                            if cardManager.hasNextIndex() && purchaseManager.shouldShowPurchaseAlert(card: cardManager.displayCards()[cardManager.currentIndex + 1]) {
                                                 showPurchaseView = true
                                             } else {
-                                                purchaseManager.increaseUseTimes()
                                                 // 向左滑动，显示下一张
                                                 cardManager.increaseIndex()
                                                 isCardFlipped = false // 重置翻面状态

@@ -18,6 +18,9 @@ class CardManager: ObservableObject {
     // 收藏的卡片ID列表
     @Published var favoriteCardIds: [Int] = []
     
+    // 已看过的卡片ID列表（翻了汤底的卡片）
+    @Published var viewedCardIds: [Int] = []
+    
     // 卡片来源，默认为ALL
     @Published var cardSource: CardSource = .all
     
@@ -30,9 +33,11 @@ class CardManager: ObservableObject {
     
     // 本地存储的键名
     private let favoritesKey = "favoriteCardIds"
+    private let viewedCardsKey = "viewedCardIds"
     private let userDefaults = UserDefaults.standard
     
     init() {
+        loadViewedCards()
         loadCards()
         loadFavorites()
     }
@@ -56,14 +61,39 @@ class CardManager: ObservableObject {
             // 随机打乱卡片顺序
             cards = cardData.cards.shuffled()
             
-            // 提取前10个isTop为true的卡片
-            let topCards = cards.filter { $0.isTop ?? false }.prefix(10)
-            // 创建一个新的数组，将topCards放在最前面，然后添加剩余的卡片
-            let remainingCards = cards.filter { card in 
-                // 确保不包含已经在topCards中的卡片
-                !topCards.contains { $0.id == card.id }
-            }
+            // Free的cards优先展示
+            let topCards = cards.filter { $0.isFreeCard }
+            let remainingCards = cards.filter { !$0.isFreeCard }
             cards = Array(topCards) + remainingCards
+            
+            // 按position调整那些带position值的卡片
+            if !cards.isEmpty {
+                var reorderedCards = cards
+                for (index, card) in cards.enumerated() {
+                    if let cardPosition = card.position, cardPosition > 0 {
+                        var position = cardPosition
+                        if  position > reorderedCards.count {
+                            position = reorderedCards.count
+                        }
+                        // 移除当前位置的卡片
+                        reorderedCards.remove(at: index)
+                        // 插入到指定位置（position从1开始，所以减1）
+                        reorderedCards.insert(card, at: position - 1)
+                    }
+                }
+                cards = reorderedCards
+            }
+            
+            // 将已看过的卡片放到最后面
+            let unviewedCards = cards.filter { !viewedCardIds.contains($0.id) }
+            let viewedCards = cards.filter { viewedCardIds.contains($0.id) }
+            cards = unviewedCards + viewedCards
+
+            // print("加载cards \(cards.count) 个")
+            // // 帮忙把每个card的title逐行打印出来
+            // for card in cards {
+            //     print("   - \(card.front.title) \(card.isFreeCard ? "Free" : "Paid")")
+            // }
             
             isLoading = false
         } catch {
@@ -124,6 +154,31 @@ class CardManager: ObservableObject {
         if let savedFavorites = userDefaults.array(forKey: favoritesKey) as? [Int] {
             favoriteCardIds = savedFavorites
         }
+    }
+    
+    /// 保存已看过卡片列表到本地存储
+    private func saveViewedCards() {
+        userDefaults.set(viewedCardIds, forKey: viewedCardsKey)
+    }
+    
+    /// 从本地存储加载已看过卡片列表
+    private func loadViewedCards() {
+        if let savedViewedCards = userDefaults.array(forKey: viewedCardsKey) as? [Int] {
+            viewedCardIds = savedViewedCards
+        }
+    }
+    
+    /// 标记卡片为已看过
+    func markCardAsViewed(cardId: Int) {
+        if !viewedCardIds.contains(cardId) {
+            viewedCardIds.append(cardId)
+            saveViewedCards()
+        }
+    }
+    
+    /// 检查卡片是否已看过
+    func isCardViewed(cardId: Int) -> Bool {
+        return viewedCardIds.contains(cardId)
     }
     
     /// 获取要显示的卡片列表

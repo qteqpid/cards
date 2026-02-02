@@ -84,7 +84,7 @@ class TurtleBot: ObservableObject {
                 UserTracker.shared.hasShownInstruction = true
             }
 
-            let defaultMessage = Message(isUser: false, content: "hi，我是龟探长。\(instruction)本次海龟汤题目：\(card.front.title ?? "")，请开始提问吧。")
+            let defaultMessage = Message(isUser: false, content: "hi，我是龟探长。\(instruction)本次海龟汤题目：\(card.front.title ?? "")，请开始提问吧。实在想不出来也可以问我要提示哦")
             conversationHistory.append(defaultMessage)
         }
     }
@@ -278,7 +278,7 @@ class TurtleBot: ObservableObject {
     }
 
     private let doctorKnowledges = [
-        "你好！我是\(TurtleBot.name)，欢迎来到我的房间。这个地图上有很多隐藏的机关，找到并点击它们，开始探索吧!\n对了，帮忙双击下我的龟脑袋，我先去休息了...",
+        "你好！我是\(TurtleBot.name)，欢迎来到我的房间。这个地图上有很多隐藏的机关，找到并点击它们，开始探索吧!\n如果你想继续解海龟汤，点击桌面上的纸张即可回到主界面。\n对了，帮忙双击下我的龟脑袋，我先去休息了...",
         "每日小提醒：海龟汤作为一种融合推理与脑洞的社交游戏风靡全球。但小学生对死亡话题的天然好奇，通过海龟汤转化为推理乐趣，需警惕部分谜题中\"尸体\"、\"虐杀\"等元素可能带来的心理冲击。\n如果你年龄尚小，请慎重玩汤哦!",
         "每日小知识：海龟汤游戏起源于日本，英文原名是\"Lateral Thinking Puzzle\"（水平思考谜题），后来在中国被翻译成了更易记的\"海龟汤\"呢！",
         "每日小知识：玩海龟汤的核心是\"水平思考\"，由英国心理学家爱德华・德・波诺（Edward de Bono）于 1967 年首次提出，不能只用常规逻辑哦！要学会从不同角度想问题，才能揭开谜底。",
@@ -386,6 +386,8 @@ struct TurtleNotificationView: View {
 // 龟龟裁判视图组件
 struct TurtleJudgeView: View {
     @ObservedObject var cardManager: CardManager
+    @ObservedObject var purchaseManager: InAppPurchaseManager
+    @Binding var showPurchaseView: Bool
     @ObservedObject private var turtleBot = TurtleBot.shared
     @State private var userInput: String = ""
     // 添加状态变量来跟踪拖动偏移量和当前位置
@@ -530,6 +532,12 @@ struct TurtleJudgeView: View {
 
     private func sendMessage() {
         guard !userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
+        // 检查是否需要显示购买提示
+        if purchaseManager.shouldShowPurchaseAlert(card: nil) {
+            showPurchaseView = true
+            return
+        }
         
         let message = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
         userInput = "" // 清空输入框

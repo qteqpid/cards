@@ -36,8 +36,8 @@ struct PurchaseView: View {
                     
                     // 功能列表
                     VStack(alignment: .leading, spacing: 16) {
-                        FeatureRow(icon: "clock.badge.checkmark", title: "永久使用 🎟️", description: "不再受试用期使用限制")
-                        FeatureRow(icon: "shield.checkered", title: "解锁功能 🎉", description: "解锁AI龟探长、收藏、音乐等所有功能")
+                        FeatureRow(icon: "clock.badge.checkmark", title: "永久使用 🎟️", description: "一次购买即可永久免费玩所有的汤")
+                        FeatureRow(icon: "shield.checkered", title: "解锁功能 🎉", description: "解锁AI龟探长，AI互动玩汤更有意思")
                         FeatureRow(icon: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90", title: "感谢打赏 🎁", description: "您的支持是我坚持做下去的动力，谢谢！")
                     }
                     .padding(.horizontal)

@@ -6,13 +6,14 @@ struct FlipCardView: View {
     @State private var showDescription = false // 控制描述文本的显示
     @State private var animationTimer: Timer? = nil
     @ObservedObject var purchaseManager: InAppPurchaseManager
+    @ObservedObject var cardManager: CardManager
     @Binding var showPurchaseView: Bool
     @State private var showTurtleHintAlert = false // 控制龟探长提示的显示
     
     var body: some View {
         ZStack {
             // 正面
-            CardFrontView(cardSide: card.front, cardId: card.id, author: card.author, labels: card.labels)
+            CardFrontView(cardSide: card.front, cardId: card.id, author: card.author, authorUrl: card.authorUrl, labels: card.labels)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 180 : 0),
                     axis: (x: 0, y: 1, z: 0)
@@ -31,20 +32,22 @@ struct FlipCardView: View {
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.8)) {                
                 // 点击卡片时检查是否需要显示购买提醒
-                if purchaseManager.shouldShowPurchaseAlert() {
+                if purchaseManager.shouldShowPurchaseAlert(card: card) {
                     showPurchaseView = true
                 } else {
-                    purchaseManager.increaseUseTimes()
-                    
-                    // 检查是否是第一次查看汤底
-                    if !isFlipped && UserTracker.shared.isFirstViewSoup {
-                        UserTracker.shared.isFirstViewSoup = false
+                    // 检查当前卡片是否已看过
+                    if !isFlipped && !cardManager.isCardViewed(cardId: card.id) && cardManager.isAllMode() {
+                        // 如果没看过，显示猜题提示弹窗
                         showTurtleHintAlert = true
                     } else {
-                        // 如果不是第一次，直接翻转卡片
+                        // 如果已看过或已经翻转，直接翻转卡片
                         isFlipped.toggle()
-                        resetDescriptionVisibility() // 重置描述文本的显示状态
-                    }
+                        resetDescriptionVisibility()
+                        // 标记卡片为已看过
+                        if isFlipped {
+                            cardManager.markCardAsViewed(cardId: card.id)
+                        }
+                    } 
                 }
             }
         }
@@ -57,6 +60,7 @@ struct FlipCardView: View {
                     withAnimation(.easeInOut(duration: 0.8)) {
                         isFlipped.toggle()
                         resetDescriptionVisibility()
+                        cardManager.markCardAsViewed(cardId: card.id)
                     }
                 },
                 secondaryButton: .cancel(Text("好的"))
@@ -89,6 +93,7 @@ struct CardFrontView: View {
     let cardSide: CardSide
     let cardId: Int // 卡片ID
     let author: String?
+    let authorUrl: String? // 作者URL
     let labels: [String]? // 标签数组
     @Environment(\.isDescriptionVisible) private var isDescriptionVisible // 从环境中获取描述文本的显示状态
     @State private var showHeartAnimation = false // 控制爱心动画的显示状态
@@ -125,12 +130,26 @@ struct CardFrontView: View {
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .foregroundColor(.primary)
-                            if let author {
-                                Text("by "+author)
-                                    .font(.caption)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.primary)
-                                    .opacity(0.8)
+                            if let author {    
+                                if let authorUrl {
+                                    // 当authorUrl不为空时，显示带下划线的可点击文本
+                                    Text("by \(author)")
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                        .opacity(0.8)
+                                        .underline()
+                                        .highPriorityGesture(TapGesture().onEnded {
+                                            AppConfigs.openUrl(url: authorUrl)
+                                        })
+                                } else {
+                                    // 当authorUrl为空时，显示普通文本
+                                    Text("by \(author)")
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                        .opacity(0.8)
+                                }
                             }
                         }
                     }
@@ -246,6 +265,7 @@ struct CardFrontView: View {
                 }
             }
         )
+        
     }
     
     

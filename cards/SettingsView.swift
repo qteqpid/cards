@@ -81,12 +81,21 @@ struct SettingsView: View {
                                 .font(.body)
                                 .foregroundColor(.secondary)
                                 .lineSpacing(5)
-                            
-                            Text("✨ 主要功能")
+
+                            Text("👍 支持原创")
                                 .font(.headline)
                                 .foregroundColor(.primary)
                                 .padding(.top, 5)
-                            Text("• 海量优质海龟汤，持续更新\n• 支持收藏喜欢的海龟汤题目\n• 背景音效增强游戏体验\n• 点击主界面地图图标，探索更多彩蛋")
+                            Text("• 欢迎原创海龟汤的加入\n• 在汤面标题下方标注原创作者\n• 点击作者名字即可跳转至作者主页")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .lineSpacing(5)
+
+                            Text("⭐ APP主要功能")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                                .padding(.top, 5)
+                            Text("• 海量优质海龟汤，持续更新\n• AI龟互动，一个人也能玩汤\n• 双击收藏喜欢的海龟汤题目\n• 背景音效，沉浸式游玩体验\n• 点击主界面地图图标，探索更多彩蛋")
                                 .font(.body)
                                 .foregroundColor(.secondary)
                                 .lineSpacing(5)
@@ -113,7 +122,7 @@ struct SettingsView: View {
                            AppConfigs.openUrl(url: "https://xhslink.com/m/6ooRgc36BTt")
                        }
                        SettingsRow(iconName: "email_icon.png", title: "glloveyp@163.com", isLast: true) {
-                            EmptyView()
+                            EmptyView() 
                        }
                     
                    }

@@ -68,9 +68,13 @@ class InAppPurchaseManager: ObservableObject {
     }
     
     // 检查是否需要显示购买提示
-    func shouldShowPurchaseAlert() -> Bool {
+    func shouldShowPurchaseAlert(card: Card?) -> Bool {
         if isPremium {
             return false
+        }
+
+        if let currentCard = card {
+            return !currentCard.isFreeCard
         }
         
         // 检查限制

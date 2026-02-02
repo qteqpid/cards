@@ -20,10 +20,15 @@ struct Card: Identifiable, Codable, Equatable {
     let id: Int
     // 原创作者
     let author: String?
+    let authorUrl: String?
     let front: CardSide
     let back: CardSide
     // 标签数组，可为空
     let labels: [String]?
-    // 是否是候选的头部汤
-    let isTop: Bool?
+    let position: Int?
+    let isFree: Bool?
+
+    var isFreeCard: Bool {
+        isFree ?? false
+    }
 }

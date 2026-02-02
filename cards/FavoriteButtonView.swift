@@ -20,14 +20,9 @@ struct FavoriteButtonView: View {
                     // 显示提示框
                     showEmptyFavoritesAlert = true
                 } else {
-                        // 检查是否需要显示购买弹窗
-                    if purchaseManager.shouldShowPurchaseAlert() {
-                        showPurchaseView = true
-                    } else {
-                        cardManager.switchCardSource(to: .favorite)
-                        // 重置翻面状态
-                        isCardFlipped = false
-                    }
+                    cardManager.switchCardSource(to: .favorite)
+                    // 重置翻面状态
+                    isCardFlipped = false
                 }
             }
         }) {

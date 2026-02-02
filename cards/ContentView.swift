@@ -152,7 +152,7 @@ struct ContentView: View {
                 } else if turtleBot.isInScenarioOf(scenario: Scenario.challenge) {
                     HStack {
                         Spacer()
-                        TurtleJudgeView(cardManager: cardManager)
+                        TurtleJudgeView(cardManager: cardManager, purchaseManager: purchaseManager, showPurchaseView: $showPurchaseView)
                             .id("turtle-judge-\(cardManager.cardSource)-\(cardManager.currentIndex)") // 添加id确保模式切换时重新创建
                         Spacer()
                     }
@@ -341,18 +341,14 @@ struct HeadButtonsView: View {
 
             // 地图按钮组件
             Button(action: {
-                if purchaseManager.shouldShowPurchaseAlert() {
-                    showPurchaseView = true
-                } else {
-                    showScrollView = false
-                    if !UserTracker.shared.hasEnteredMap {
-                        // 未进入过地图，这是第一次
-                        UserTracker.shared.hasEnteredMap = true
-                        // 添加1秒延迟后再执行
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
-                            TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
-                        }
+                showScrollView = false
+                if !UserTracker.shared.hasEnteredMap {
+                    // 未进入过地图，这是第一次
+                    UserTracker.shared.hasEnteredMap = true
+                    // 添加1秒延迟后再执行
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        TurtleBot.shared.switchToScenario(scenario: Scenario.notification)
+                        TurtleBot.shared.speak(TurtleBot.shared.getDoctorKnowledge())
                     }
                 }
             }) {

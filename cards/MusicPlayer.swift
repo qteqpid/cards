@@ -37,11 +37,7 @@ struct MusicToggleButton: View {
     
     var body: some View {
         Button(action: {
-            if purchaseManager.shouldShowPurchaseAlert() {
-                showPurchaseView = true
-            } else {
-                musicPlayer.togglePlayback()
-            }
+            musicPlayer.togglePlayback()
         }) {
             Circle()
                 .fill(Color.white.opacity(0.8))
