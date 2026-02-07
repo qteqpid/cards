@@ -207,7 +207,7 @@ class TurtleBot: ObservableObject {
                             }
                         } catch {
                             DispatchQueue.main.async {
-                                let errorMessage = Message(isUser: false, content: "哎呀我挂了，请稍后再问我！")
+                                let errorMessage = Message(isUser: false, content: "哎呀我网络挂了，请稍后再问我！实在抱歉，我也不想这样...")
                                 self.conversationHistory.append(errorMessage)
                             }
                         }
