@@ -19,6 +19,7 @@ class UserTracker {
     private let shownInstructionKey = "shown_instruction"
     
     private let firstViewSoupKey = "first_view_soup"
+    private let seenTurtleHintKey = "seen_turtle_hint"
     
     // 检查是否已进入地图
     var hasEnteredMap: Bool {
@@ -34,5 +35,10 @@ class UserTracker {
     var isFirstViewSoup: Bool {
         get { UserDefaults.standard.bool(forKey: firstViewSoupKey) == false }
         set { UserDefaults.standard.set(!newValue, forKey: firstViewSoupKey) }
+    }
+    
+    var hasSeenTurtleHint: Bool {
+        get { UserDefaults.standard.bool(forKey: seenTurtleHintKey) }
+        set { UserDefaults.standard.set(newValue, forKey: seenTurtleHintKey) }
     }
 }

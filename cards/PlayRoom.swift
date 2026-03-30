@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import UIKit
+import StoreKit
 
 private let maxQuestionCount = 10
 
@@ -8,7 +9,6 @@ struct PlayRoomView: View {
     let card: Card
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var purchaseManager: InAppPurchaseManager
-    @Binding var showPurchaseView: Bool
     @ObservedObject private var judgeBot = JudgeBot()
     @StateObject private var musicPlayer = MusicPlayer.shared
     @State private var userInput: String = ""
@@ -16,11 +16,27 @@ struct PlayRoomView: View {
     @State private var questionCount = 0
     @State private var correctGuessCount = 0
     @State private var isSuccess = false
-    
+    @State private var showPurchaseView = false
+    @State private var showRatingAlert = false
+
     var body: some View {
         ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
-            
+            ZStack {}
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    Group {
+                        if let bgImage = AppConfigs.loadImage(name: "room_bg.jpg") {
+                            Image(uiImage: bgImage)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            Color.black
+                        }
+                    }
+                    .ignoresSafeArea()
+                )
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 headerView
                 Divider()
@@ -32,6 +48,9 @@ struct PlayRoomView: View {
         }
         .onAppear {
             resetConversationHistory()
+        }
+        .sheet(isPresented: $showPurchaseView) {
+            PurchaseView(purchaseManager: purchaseManager, showRatingAlert: $showRatingAlert)
         }
     }
     
@@ -228,7 +247,7 @@ struct PlayRoomView: View {
         triggerHapticFeedback()
         guard !userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
-        if purchaseManager.shouldShowPurchaseAlert(card: card) {
+        if purchaseManager.shouldShowPurchaseAlert(card: nil) {
             showPurchaseView = true
             return
         }
@@ -252,7 +271,7 @@ struct PlayRoomView: View {
             return
         }
         
-        if purchaseManager.shouldShowPurchaseAlert(card: card) {
+        if purchaseManager.shouldShowPurchaseAlert(card: nil) {
             showPurchaseView = true
             return
         }
@@ -370,11 +389,11 @@ struct MessageRow: View {
 
                         messageBubble
                     }
-                    userAvatar
+                    AvatarView(img: "yuanshen.jpg")
                 }
             } else {
                 HStack(alignment: .top, spacing: 8) {
-                    botAvatar
+                    AvatarView(img: "turtle_detective_icon.png")
                     VStack(alignment: .leading, spacing: 4) {
                         Text("龟探长")
                             .font(.caption)
@@ -409,43 +428,6 @@ struct MessageRow: View {
             )
             .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: message.isUser ? .trailing : .leading)
     }
-    
-    private var userAvatar: some View {
-        Circle()
-            .fill(Color.white)
-            .frame(width: 40, height: 40)
-            .overlay(
-                Image(systemName: "person.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 20))
-            )
-    }
-    
-    private var botAvatar: some View {
-        Group {
-            if let image = AppConfigs.loadImage(name: "turtle_detective_icon.png") {
-                ZStack {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 40, height: 40)
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                }
-            } else {
-                Circle()
-                    .fill(Color.white)
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Image(systemName: "tortoise.fill")
-                            .foregroundColor(.green)
-                            .font(.system(size: 20))
-                    )
-            }
-        }
-    }
 }
 
 // 加载消息行 - 显示三个点动画
@@ -455,12 +437,12 @@ struct LoadingMessageRow: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            botAvatar
+            AvatarView(img: "turtle_detective_icon.png")
             VStack(alignment: .leading, spacing: 4) {
                 Text("龟探长")
                     .font(.caption)
                     .foregroundColor(.gray)
-                
+
                 HStack(spacing: 4) {
                     Circle()
                         .fill(Color.white)
@@ -492,29 +474,22 @@ struct LoadingMessageRow: View {
             }
         }
     }
+}
+
+struct AvatarView: View {
+    let img: String
     
-    private var botAvatar: some View {
-        Group {
-            if let image = AppConfigs.loadImage(name: "turtle_detective_icon.png") {
-                ZStack {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 40, height: 40)
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                }
-            } else {
-                Circle()
-                    .fill(Color.white)
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: 40, height: 40)
+            if let image = AppConfigs.loadImage(name: img) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 40, height: 40)
-                    .overlay(
-                        Image(systemName: "tortoise.fill")
-                            .foregroundColor(.green)
-                            .font(.system(size: 20))
-                    )
+                    .clipShape(Circle())
             }
         }
     }

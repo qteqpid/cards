@@ -24,7 +24,7 @@ class InAppPurchaseManager: ObservableObject {
     private let KEY_FIRST_LAUNCH_DATE = "purchaseFirstLaunchDate"
     private let KEY_USE_TIMES = "purchaseUseTimes"
     private let MAX_FREE_DAYS = 30
-    private let MAX_USE_TIMES = 10
+    private let MAX_USE_TIMES = 5
     private let limitPolicy = LimitPolicy.useLimit  // 使用哪种限制策略
     
     init() {

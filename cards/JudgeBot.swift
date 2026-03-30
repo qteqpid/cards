@@ -10,36 +10,56 @@ struct BotConfig {
 
 // Bot配置列表
 private let botConfigs: [BotConfig] = [
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-plus"
-    ),
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-flash-2026-02-23"
-    ),
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-plus-2026-02-15"
-    ),
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-27b"
-    ),
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-122b-a10b"
-    ),
-    BotConfig(
-        apiKey: "sk-918b269d28dd4585b4608291339491ae",
-        url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        model: "qwen3.5-397b-a17b"
-    ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qvq-max-2025-03-25"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3-vl-235b-a22b-thinking"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3-vl-32b-thinking"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "deepseek-r1-distill-qwen-7b"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3.5-plus-2026-02-15"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "glm-5"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen-max"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3.5-27b"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3.5-122b-a10b"
+     ),
+     BotConfig(
+         apiKey: "sk-918b269d28dd4585b4608291339491ae",
+         url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+         model: "qwen3.5-397b-a17b"
+     ),
     BotConfig(
         apiKey: "265138820d1c4bd2909506540624b718.LroRUoYiWbojTMWG",
         url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
@@ -191,7 +211,7 @@ class BaseBot: BotProtocol {
             "response_format": ["type": "json_object"]
         ]
 
-        //print("begin request \(model) \(body)")
+        print("开始调用 \(model)")
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

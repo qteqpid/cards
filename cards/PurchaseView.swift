@@ -101,11 +101,6 @@ struct PurchaseView: View {
                         
                         Button("稍后再说") {
                             dismiss()
-                            // 标记为已显示过评分弹窗
-                            if !AppRatingManager.shared.hasShownRatingAlertAfterPurchase {
-                                AppRatingManager.shared.hasShownRatingAlertAfterPurchase = true
-                                showRatingAlert = true
-                            }
                         }
                         .foregroundColor(.gray)
                         .font(.subheadline)

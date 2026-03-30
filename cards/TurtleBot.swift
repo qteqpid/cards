@@ -449,8 +449,7 @@ struct TurtleJudgeView: View {
         .fullScreenCover(isPresented: $showPlayRoom) {
             PlayRoomView(
                 card: currentCard(),
-                purchaseManager: purchaseManager,
-                showPurchaseView: $showPurchaseView
+                purchaseManager: purchaseManager
             )
         }
     }

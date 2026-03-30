@@ -32,9 +32,11 @@ struct FlipCardView: View {
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.8)) {                
                 // 检查当前卡片是否已看过
-                if !isFlipped && !cardManager.isCardViewed(cardId: card.id) && cardManager.isAllMode() && AppConfigs.isAIEnabled {
-                    // 如果没看过，显示猜题提示弹窗
+                if !isFlipped && !cardManager.isCardViewed(cardId: card.id) && cardManager.isAllMode() && AppConfigs.isAIEnabled && !UserTracker.shared.hasSeenTurtleHint {
+                    // 如果没看过且用户还没看过提示，显示猜题提示弹窗
                     showTurtleHintAlert = true
+                    // 标记用户已经看过提示
+                    UserTracker.shared.hasSeenTurtleHint = true
                 } else {
                     // 如果已看过或已经翻转，直接翻转卡片
                     isFlipped.toggle()
