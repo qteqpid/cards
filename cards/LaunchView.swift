@@ -4,6 +4,7 @@ import SwiftUI
 /// 展示海龟汤介绍和欢迎信息
 struct LaunchView: View {
     @State private var isShowingMainView = false
+    @State private var isShowingGuide = false
     @State private var subtitleOpacity: Double = 0
     @State private var descriptionOpacity: Double = 0
     @State private var buttonOpacity: Double = 0
@@ -18,12 +19,11 @@ struct LaunchView: View {
                 .ignoresSafeArea()
                 .brightness(-0.3) // 稍微调暗图片，确保前景内容清晰可见
             
-            
             // 主要内容
             VStack() {
                 Spacer()
                 
-    
+        
                 // 介绍文字
                 VStack(spacing: 25) {
                     // 副标题
@@ -58,7 +58,12 @@ struct LaunchView: View {
                 // 开始按钮
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.5)) {
-                        isShowingMainView = true
+                        // 检查是否第一次打开
+                        if !UserDefaults.standard.bool(forKey: "hasShownGuide") {
+                            isShowingGuide = true
+                        } else {
+                            isShowingMainView = true
+                        }
                     }
                 }) {
                     HStack(spacing: 12) {
@@ -84,6 +89,10 @@ struct LaunchView: View {
                 Spacer()
             }
             
+            // 使用说明覆盖层
+            if isShowingGuide {
+                GuideView(isShowingMainView: $isShowingMainView)
+            }
         }
         .onAppear {
             startAnimations()
@@ -108,6 +117,48 @@ struct LaunchView: View {
         // 按钮动画
         withAnimation(.easeInOut(duration: 0.8).delay(1.0)) {
             buttonOpacity = 1
+        }
+    }
+}
+
+/// 应用使用说明视图
+struct GuideView: View {
+    @Binding var isShowingMainView: Bool
+    
+    var body: some View {
+        ZStack {
+            // 半透明黑色背景
+            Color.black.opacity(0.8)
+                .ignoresSafeArea()
+            
+            // 中间展示guide.jpg图片
+            VStack {
+                Spacer()
+                if let guideImage = AppConfigs.loadImage(name: "guide.jpg") {
+                    Image(uiImage: guideImage)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(40)
+                } else {
+                    Text("使用说明")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                }
+                
+                Text("点击任意区域开始")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.7))
+                Spacer()
+            }
+        }
+        .onTapGesture {
+            // 标记已显示过使用说明
+            UserDefaults.standard.set(true, forKey: "hasShownGuide")
+            // 直接进入主界面
+            withAnimation(.easeInOut(duration: 0.3)) {
+                isShowingMainView = true
+            }
         }
     }
 }

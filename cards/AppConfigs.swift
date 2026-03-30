@@ -27,6 +27,9 @@ struct AppConfigs {
     // 顶部按钮大小
     static let buttonSize: CGFloat = 28
     static let buttonImageSize: CGFloat = 18
+    
+    // AI功能开关
+    static let isAIEnabled: Bool = true
 
     
     static var startTitleFontSize: CGFloat {

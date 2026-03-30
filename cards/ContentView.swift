@@ -112,7 +112,7 @@ struct ContentView: View {
                             )
                             
                             // 滑动提示文字 - 根据状态变量条件显示
-                            Text(showSwipeHint ? "左右滑动纸张切换题目" : "")
+                            Text(showSwipeHint ? "左右拖动纸张切换题目" : "")
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.5))
                                 .padding(.bottom, 10)

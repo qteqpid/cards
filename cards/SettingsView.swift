@@ -77,7 +77,7 @@ struct SettingsView: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                                 .padding(.top, 5)
-                            Text("1. 查看主界面卡片上的海龟汤题目（汤面）\n2. 点击卡片右上角的龟探长，启动AI主持模式\n3. 思考并提出问题，例如：「死者是自杀吗？」\n4. 根据回答持续提问，逐步接近真相\n5. 玩家也可以直接点击卡片，翻面查看完整故事（汤底）\n6. 左右滑动卡片即可切换海龟汤题目哦")
+                            Text("1. 查看主界面纸张上的海龟汤题目（汤面）\n2. 点击纸张右上角的龟探长开始盘汤(AI主持)\n3. 思考并提出问题，例如：「有人死了吗？」\n4. 根据回答持续提问，逐步接近真相\n5. 玩家也可以直接点击纸张查看汤底(完整故事）\n6. 左右拖动纸张即可切换海龟汤题目哦")
                                 .font(.body)
                                 .foregroundColor(.secondary)
                                 .lineSpacing(5)
@@ -90,18 +90,23 @@ struct SettingsView: View {
                                 .font(.body)
                                 .foregroundColor(.secondary)
                                 .lineSpacing(5)
-
-                            Text("⭐ APP主要功能")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                                .padding(.top, 5)
-                            Text("• 海量优质海龟汤，持续更新\n• AI龟互动，一个人也能玩汤\n• 双击收藏喜欢的海龟汤题目\n• 背景音效，沉浸式游玩体验\n• 点击主界面地图图标，探索更多彩蛋")
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                                .lineSpacing(5)
                         }
                         .padding(.vertical, 10)
                     }
+                    
+                    if let guideImage = AppConfigs.loadImage(name: "guide.jpg") {
+                        // APP使用指南Section
+                        Section(header: Text("APP使用指南").foregroundColor(settingHeaderColor).font(.title2)) {
+                            VStack {
+                                Image(uiImage: guideImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .padding(.vertical, 10)
+                        }
+                    }
+                    
                     
                    Section(header: Text("作者的更多宝藏app").foregroundColor(settingHeaderColor).font(.title2)) {
                        // 使用ForEach遍历视图数组，实现map + foreach的展示方式

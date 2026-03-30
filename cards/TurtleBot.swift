@@ -23,7 +23,6 @@ struct Message: Identifiable, Codable {
     let content: String
     let userInputForJudge: String?
     
-    // 初始化方法，为userInputForJudge提供默认值
     init(isUser: Bool, content: String, userInputForJudge: String? = nil) {
         self.isUser = isUser
         self.content = content
@@ -44,7 +43,7 @@ class TurtleBot: ObservableObject {
     private var scenario = Scenario.none
     private static let name = "龟博士"
     private var typingTimer: Timer? // 存储定时器实例
-    private let judgeBot = JudgeBot(apiKey: "265138820d1c4bd2909506540624b718.LroRUoYiWbojTMWG") // 初始化JudgeBot实例
+    public let judgeBot = JudgeBot() // 初始化JudgeBot实例
     private var questionCount = 0 // 记录针对当前卡片的询问次数
     private var correctGuessCount = 0 // 记录猜对的次数
     private var isSuccess = false // 记录是否已经完全猜出汤底
@@ -84,7 +83,7 @@ class TurtleBot: ObservableObject {
                 UserTracker.shared.hasShownInstruction = true
             }
 
-            let defaultMessage = Message(isUser: false, content: "hi，我是龟探长。\(instruction)本次海龟汤题目：\(card.front.title ?? "")，请开始提问吧。实在想不出来也可以问我要提示哦")
+            let defaultMessage = Message(isUser: false, content: AppConfigs.isAIEnabled ? "hi，\(instruction)请开始提问吧。实在想不出来也可以点左下角的问号，找我要提示哦" : "hi，我是龟探长。\(instruction)本次海龟汤题目：\(card.front.title ?? "")，请开始提问吧。实在想不出来也可以问我要提示哦")
             conversationHistory.append(defaultMessage)
         }
     }
@@ -96,7 +95,7 @@ class TurtleBot: ObservableObject {
         case .notification:
             return CGPoint(x: AppConfigs.screenWidth * 0.5, y: AppConfigs.screenHeight * 0.4)
         case .challenge:
-            return CGPoint(x: AppConfigs.screenWidth * 0.5, y: AppConfigs.screenHeight * 0.1)
+            return CGPoint(x: AppConfigs.screenWidth * 0.5, y: AppConfigs.screenHeight * 0.15)
         }
     }
     
@@ -183,7 +182,7 @@ class TurtleBot: ObservableObject {
                         suffix = "下次继续加油哦！"
                     }
                     
-                    response = "你已经问问题超过10次了，\(suffix)\n快点击卡片查看汤底吧"
+                    response = "你已经问问题超过10次了，\(suffix)\n快去查看汤底吧"
                 } else {
                     // 调用JudgeBot的guess函数
                     Task {
@@ -195,7 +194,7 @@ class TurtleBot: ObservableObject {
                                 if result.answer == "是" || result.answer == "成功" {
                                     self.correctGuessCount += 1
                                     if result.answer.contains("成功") {
-                                        judgeResponse = "恭喜你! 你已经猜得差不多了，快点击卡片查看完整的汤底吧"
+                                        judgeResponse = "恭喜你! 你已经猜得差不多了，快去查看完整的汤底吧"
                                         self.isSuccess = true
                                     }
                                 }
@@ -388,12 +387,10 @@ struct TurtleJudgeView: View {
     @ObservedObject var cardManager: CardManager
     @ObservedObject var purchaseManager: InAppPurchaseManager
     @Binding var showPurchaseView: Bool
-    @ObservedObject private var turtleBot = TurtleBot.shared
-    @State private var userInput: String = ""
     // 添加状态变量来跟踪拖动偏移量和当前位置
     @State private var dragOffset = CGSize.zero
     @State private var currentPosition = CGSize.zero
-    @State private var playGuess = false
+    @State private var showPlayRoom = false
     // 添加动画状态变量
     @State private var scale: CGFloat = 1.0
     
@@ -405,106 +402,30 @@ struct TurtleJudgeView: View {
     
     var body: some View {
         // 整体容器，垂直排列
-        VStack(spacing: 10) {
-            // 第二行：历史记录显示区域，左对齐
-            // 外层容器，设置背景和圆角
-            VStack {
-                ScrollViewReader { proxy in
-                    ScrollView(.vertical, showsIndicators: true) {
-                        VStack(spacing: 4) {
-                            ForEach(turtleBot.conversationHistory) { message in
-                                MessageBubble(message: message)
-                                    .id(message.id)
-                            }
-                            // 空视图，用于确保最新消息能够完全显示
-                            Color.clear.frame(height: 1)
-                                .id("bottom")
-                        }
+        HStack {
+            Spacer()
+            // turtle图片 - 添加发光效果和缩放动画
+            if let turtle = AppConfigs.loadImage(name: TurtleBot.shared.getTurtleIcon()) {
+                Image(uiImage: turtle)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    // 添加缩放动画
+                    .scaleEffect(scale)
+                    // 添加黄色发光效果
+                    .shadow(color: .yellow, radius: 10, x: 0, y: 0)
+                    .onTapGesture {
+                        // 单击显示PlayRoom
+                        showPlayRoom = true
                     }
-                    .onChange(of: turtleBot.conversationHistory.count) { _ in
-                        // 当对话历史更新时，滚动到最后一条消息
-                        withAnimation {
-                            proxy.scrollTo("bottom", anchor: .bottom)
-                        }
+                    .onAppear {
+                        startAnimation()
                     }
-                }
             }
-            .frame(height: 100) // 固定高度，支持滚动
-            .padding(.horizontal, 15) // 外层水平内边距
-            .padding(.vertical, 10)   // 外层垂直内边距
-            .background(Color.white.opacity(0.9))
-            .cornerRadius(15)
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(Color.gray.opacity(0.5), lineWidth: 1.0)
-            )
-            .frame(maxWidth: .infinity, alignment: .leading) // 左对齐
-            .opacity(playGuess ? 1 : 0) // 根据playGuess控制透明度
-
-            // 第二行：输入框和发送按钮与turtle图片并排
-            HStack(alignment: .top, spacing: 10) {
-                // 输入框和发送按钮
-                HStack(spacing: 8) {
-                    TextField("输入问题...", text: $userInput)
-                        .padding(12)
-                        .background(Color.white)
-                        .cornerRadius(15)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 15)
-                                .stroke(Color.gray.opacity(0.5), lineWidth: 1.0)
-                        )
-                        .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
-                        .onSubmit {
-                            sendMessage()
-                        }
-                    
-                    Button(action: sendMessage) {
-                        Image(systemName: "paperplane.fill")
-                            .foregroundColor(Color.white)
-                            .font(.system(size: 18))
-                            .padding(12)
-                            .background(Color.blue)
-                            .cornerRadius(15)
-                            .shadow(color: Color.black.opacity(0.2), radius: 3, x: 0, y: 2)
-                    }
-                    .disabled(userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-                .padding(.horizontal, 0)
-                .onAppear {
-                    // 自动聚焦输入框
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
-                    }
-                }
-                .opacity(playGuess ? 1 : 0) // 根据playGuess控制透明度
-                
-                // turtle图片 - 添加发光效果和缩放动画
-                if let turtle = AppConfigs.loadImage(name: TurtleBot.shared.getTurtleIcon()) {
-                    Image(uiImage: turtle)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                        // 添加缩放动画
-                        .scaleEffect(scale)
-                        // 添加黄色发光效果
-                        .shadow(color: .yellow, radius: 10, x: 0, y: 0)
-                        .onTapGesture {
-                            // 单击切换playGuess的值
-                            playGuess.toggle()
-                        }
-                        .onTapGesture(count: 2) {
-                            playGuess.toggle()
-                        }
-                        .onAppear {
-                            startAnimation()
-                        }
-                }
-            }
-            
             
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 20)
+        .padding(.vertical, 20)
+        .padding(.horizontal, 30)
         // 添加拖动功能
         .offset(
             x: currentPosition.width + dragOffset.width,
@@ -525,54 +446,12 @@ struct TurtleJudgeView: View {
         )
         .zIndex(100) // 确保搜索框在其他内容之上
         .position(TurtleBot.shared.getTurtlePosition()) // 定位到屏幕中下位置
-        .onAppear{
-            turtleBot.resetConversationHistory(currentCard())
-        }
-    }
-
-    private func sendMessage() {
-        guard !userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        
-        // 检查是否需要显示购买提示
-        if purchaseManager.shouldShowPurchaseAlert(card: nil) {
-            showPurchaseView = true
-            return
-        }
-        
-        let message = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
-        userInput = "" // 清空输入框
-        
-        // 调用TurtleBot的judge方法
-        turtleBot.judge(message, card: currentCard())
-    }
-    
-    // 消息气泡组件
-    private struct MessageBubble: View {
-        let message: Message
-        
-        var body: some View {
-            HStack {
-                if message.isUser {
-                    Text(message.content)
-                        .font(.system(size: 14))
-                        .foregroundColor(Color.white)
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 10)
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                        .padding(.trailing, 20) // 为用户消息左侧留出空间
-                    Spacer()
-                } else {
-                    Spacer()
-                    Text(message.content)
-                        .font(.system(size: 14))
-                        .foregroundColor(Color.black)
-                        .padding(10)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(12)
-                        .padding(.leading, 20) // 为机器人消息右侧留出空间
-                }
-            }
+        .fullScreenCover(isPresented: $showPlayRoom) {
+            PlayRoomView(
+                card: currentCard(),
+                purchaseManager: purchaseManager,
+                showPurchaseView: $showPurchaseView
+            )
         }
     }
     

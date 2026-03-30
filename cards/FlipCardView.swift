@@ -31,30 +31,25 @@ struct FlipCardView: View {
         .frame(width: AppConfigs.cardWidth, height: AppConfigs.cardHeight)
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.8)) {                
-                // 点击卡片时检查是否需要显示购买提醒
-                if purchaseManager.shouldShowPurchaseAlert(card: card) {
-                    showPurchaseView = true
+                // 检查当前卡片是否已看过
+                if !isFlipped && !cardManager.isCardViewed(cardId: card.id) && cardManager.isAllMode() && AppConfigs.isAIEnabled {
+                    // 如果没看过，显示猜题提示弹窗
+                    showTurtleHintAlert = true
                 } else {
-                    // 检查当前卡片是否已看过
-                    if !isFlipped && !cardManager.isCardViewed(cardId: card.id) && cardManager.isAllMode() {
-                        // 如果没看过，显示猜题提示弹窗
-                        showTurtleHintAlert = true
-                    } else {
-                        // 如果已看过或已经翻转，直接翻转卡片
-                        isFlipped.toggle()
-                        resetDescriptionVisibility()
-                        // 标记卡片为已看过
-                        if isFlipped {
-                            cardManager.markCardAsViewed(cardId: card.id)
-                        }
-                    } 
-                }
+                    // 如果已看过或已经翻转，直接翻转卡片
+                    isFlipped.toggle()
+                    resetDescriptionVisibility()
+                    // 标记卡片为已看过
+                    if isFlipped {
+                        cardManager.markCardAsViewed(cardId: card.id)
+                    }
+                } 
             }
         }
         .alert(isPresented: $showTurtleHintAlert) {
             Alert(
                 title: Text("提示"),
-                message: Text("看汤底之前，要不要先点击汤面右上角的龟探长玩一玩？"),
+                message: Text("看汤底之前，要不要先点击右上角的龟探长玩一玩？"),
                 primaryButton: .default(Text("继续查看汤底")) {
                     // 继续查看汤底，翻转卡片
                     withAnimation(.easeInOut(duration: 0.8)) {
@@ -181,7 +176,7 @@ struct CardFrontView: View {
                 
                 Spacer()
                 // 提示文字
-                Text("点击纸张查看汤底")
+                Text("单击纸张查看汤底")
                     .font(.caption)
                     .foregroundColor(.primary)
                     .padding(.bottom, 0)
